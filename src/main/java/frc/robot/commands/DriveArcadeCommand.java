@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Drivetrain;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.math.MathUtil.applyDeadband;
 
@@ -34,13 +35,19 @@ public class DriveArcadeCommand extends Command {
     @Override
     public void execute() {
         double forward = -driver.getLeftY();
-        double right = -driver.getLeftX();
+        double right = -driver.getRightX();
 
         forward = applyDeadband(forward, 0.1);
         right = applyDeadband(right, 0.1);
 
         forward = Math.copySign(Math.pow(forward, 2), forward);
         right = Math.copySign(Math.pow(right, 2), right);
+
+        forward = forward * 0.5;
+        right = right * 0.5;
+
+        Logger.recordOutput("ActiveCommands/DriveArcadeForwordCommand", forward);
+        Logger.recordOutput("ActiveCommands/DriveArcadeRightCommand", right);
 
         drivetrain.arcadeDrive(forward, right);
     }

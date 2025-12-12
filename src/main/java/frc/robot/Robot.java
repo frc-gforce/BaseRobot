@@ -8,7 +8,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 
 /**
@@ -16,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-public class Robot extends TimedRobot
+public class Robot extends LoggedRobot
 {
     private Command autonomousCommand;
     
@@ -33,8 +36,15 @@ public class Robot extends TimedRobot
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
     }
-    
-    
+
+    @Override
+    public void robotInit() {
+        Logger.recordMetadata("BaseRobot", "MyRobot");
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/logs/"));
+        Logger.addDataReceiver(new NT4Publisher());
+        Logger.start();
+    }
+
     /**
      * This method is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -45,6 +55,7 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
+        super.robotPeriodic();
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic

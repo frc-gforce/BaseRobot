@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +25,9 @@ public class Drivetrain extends SubsystemBase {
 
     private final Field2d field = new Field2d();
 
+    private SparkBaseConfig leftConfig;
+    private SparkBaseConfig rightConfig;
+
     private double xMeters = 0.0;
     private double yMeters = 0.0;
     private double headingRad = 0.0;
@@ -32,7 +36,12 @@ public class Drivetrain extends SubsystemBase {
     private double lastRightCmd = 0.0;
 
     public Drivetrain() {
-        leftFront.configure(new SparkMaxConfig().inverted(true), SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        leftConfig = new SparkMaxConfig()
+                .inverted(true);
+        rightConfig = new SparkMaxConfig()
+                .inverted(false);
+        leftFront.configure(leftConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        rightFront.configure(rightConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
         SmartDashboard.putData("Field", field);
     }
