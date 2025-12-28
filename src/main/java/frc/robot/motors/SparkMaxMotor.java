@@ -1,5 +1,6 @@
 package frc.robot.motors;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -25,13 +26,19 @@ public class SparkMaxMotor {
 
     public void setInverted(boolean isInverted) {
         config.inverted(isInverted);
+        applyConfig();
     }
 
     public SparkBaseConfig getConfig() {
         return config;
     }
 
-    public void applyConfig(SparkBaseConfig newConfig) {
-        motor.configure(newConfig);
+    public void applyConfig() {
+        motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    }
+
+    public void setBreak(boolean mode) {
+        config.idleMode(mode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
+        applyConfig();
     }
 }
