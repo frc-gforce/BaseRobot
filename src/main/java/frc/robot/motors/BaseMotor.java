@@ -4,6 +4,6 @@ public interface BaseMotor {
     void setSpeed(double speed);
     MotorConfig<?> getMotor();
     void setInverted();
-    //getConfig();
+    MotorConfig<?> getConfig();
     void applyConfig();
     }
