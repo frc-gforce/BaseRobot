@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveArcadeCommand;
@@ -49,7 +50,7 @@ public class RobotContainer
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
-
+        SmartDashboard.putNumber("Drive Power %", 100.0);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
     }
     
@@ -74,7 +75,13 @@ public class RobotContainer
         driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
     }
 
-    
+    public void pressButtons(MotorControlDrive motor) {
+        System.out.println("Press buttons on driver controller to drive");
+        driverController.a().onTrue(new InstantCommand(() -> motor.drive(0.5)));
+        driverController.x().onTrue(new InstantCommand(() -> motor.drive(-0.2)));
+        driverController.b().onTrue(new InstantCommand(motor::invertDirections));
+        driverController.y().onTrue(new InstantCommand(motor::stop));
+    }
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

@@ -24,7 +24,8 @@ public class Robot extends LoggedRobot
     private Command autonomousCommand;
     
     private final RobotContainer robotContainer;
-    
+
+//    private final MotorControlDrive motorControlDrive;
     
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -32,9 +33,13 @@ public class Robot extends LoggedRobot
      */
     public Robot()
     {
+        System.out.println( "Hello World!");
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
+
+//        motorControlDrive = new MotorControlDrive(1);
+//        robotContainer.pressButtons(motorControlDrive);
     }
 
     @Override
@@ -61,6 +66,7 @@ public class Robot extends LoggedRobot
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+//        motorControlDrive.logStats();
     }
     
     
@@ -137,4 +143,8 @@ public class Robot extends LoggedRobot
     /** This method is called periodically whilst in simulation. */
     @Override
     public void simulationPeriodic() {}
+
+    public MotorControlDrive getMotorControlDrive() {
+        return null;
+    }
 }

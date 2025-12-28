@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Drivetrain;
@@ -36,6 +37,9 @@ public class DriveArcadeCommand extends Command {
     public void execute() {
         double forward = -driver.getLeftY();
         double right = -driver.getRightX();
+        double pct = SmartDashboard.getNumber("Drive Power %", 100.0);
+        pct = Math.max(0.0, Math.min(100.0, pct));
+        double power = pct / 100.0;
 
         forward = applyDeadband(forward, 0.1);
         right = applyDeadband(right, 0.1);
@@ -43,8 +47,8 @@ public class DriveArcadeCommand extends Command {
         forward = Math.copySign(Math.pow(forward, 2), forward);
         right = Math.copySign(Math.pow(right, 2), right);
 
-        forward = forward * 0.5;
-        right = right * 0.5;
+        forward = forward * power;
+        right = right * power;
 
         Logger.recordOutput("ActiveCommands/DriveArcadeForwordCommand", forward);
         Logger.recordOutput("ActiveCommands/DriveArcadeRightCommand", right);
