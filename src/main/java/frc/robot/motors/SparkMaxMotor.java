@@ -7,7 +7,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-public class SparkMaxMotor {
+public class SparkMaxMotor implements BaseMotor {
     private final SparkMax motor;
     private final SparkBaseConfig config;
 
@@ -16,27 +16,33 @@ public class SparkMaxMotor {
         config = new SparkMaxConfig();
     }
 
+    @Override
     public void setSpeed(double speed) {
         motor.set(speed);
     }
 
-    public SparkMax getMotor() {
-        return motor;
+    @Override
+    public Motor<SparkMax> getMotor() {
+        return new Motor<>(motor);
     }
 
+    @Override
     public void setInverted(boolean isInverted) {
         config.inverted(isInverted);
         applyConfig();
     }
 
-    public SparkBaseConfig getConfig() {
-        return config;
+    @Override
+    public MotorConfig<SparkBaseConfig> getConfig() {
+        return new MotorConfig<>(config);
     }
 
+    @Override
     public void applyConfig() {
         motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
+    @Override
     public void setBreak(boolean mode) {
         config.idleMode(mode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
         applyConfig();
