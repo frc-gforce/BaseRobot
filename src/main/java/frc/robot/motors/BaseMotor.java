@@ -2,8 +2,9 @@ package frc.robot.motors;
 
 public interface BaseMotor {
     void setSpeed(double speed);
-    MotorConfig<?> getMotor();
-    void setInverted();
+    Motor<?> getMotor();
+    void setInverted(boolean inverted);
     MotorConfig<?> getConfig();
     void applyConfig();
+    void setBreak(boolean mode);
     }

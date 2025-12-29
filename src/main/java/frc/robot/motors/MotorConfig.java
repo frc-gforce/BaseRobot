@@ -1,7 +1,7 @@
 package frc.robot.motors;
 
 public class MotorConfig<T>{
-    private T value;
+    private final T value;
 
     public MotorConfig(T value) {
         this.value = value;
