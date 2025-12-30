@@ -1,10 +1,6 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -16,17 +12,12 @@ import frc.robot.motors.Motors;
 import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
-    private final BaseMotor leftFront = Motors.LEFT_FRONT; //new SparkMax(1, MotorType.kBrushed);
-//    private final PWMVictorSPX leftBack = new PWMVictorSPX(1);
-    private final BaseMotor rightFront = Motors.RIGHT_FRONT; //new SparkMax(2, MotorType.kBrushed);
-//    private final PWMVictorSPX rightBack = new PWMVictorSPX(3);
+    private final BaseMotor leftFront = Motors.LEFT_FRONT;
+    private final BaseMotor rightFront = Motors.RIGHT_FRONT;
 
-    private final DifferentialDrive drive = new DifferentialDrive(leftFront.getMotor().get(), rightFront.getMotor().get());
+    private final DifferentialDrive drive = new DifferentialDrive(leftFront::setSpeed, rightFront::setSpeed);
 
     private final Field2d field = new Field2d();
-
-    private SparkBaseConfig leftConfig;
-    private SparkBaseConfig rightConfig;
 
     private double xMeters = 0.0;
     private double yMeters = 0.0;
@@ -36,15 +27,6 @@ public class Drivetrain extends SubsystemBase {
     private double lastRightCmd = 0.0;
 
     public Drivetrain() {
-        leftConfig = new SparkMaxConfig()
-                .inverted(true);
-//                .idleMode(IdleMode.kBrake);
-        rightConfig = new SparkMaxConfig()
-                .inverted(false);
-//                .idleMode(IdleMode.kBrake);
-//        leftFront.configure(leftConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-//        rightFront.configure(rightConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-
         SmartDashboard.putData("Field", field);
     }
 
