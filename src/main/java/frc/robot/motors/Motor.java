@@ -2,7 +2,7 @@ package frc.robot.motors;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
-public class Motor<T extends MotorController>{
+public class Motor<T>{
     private final T value;
 
     public Motor(T value) {
