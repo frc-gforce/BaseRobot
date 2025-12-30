@@ -47,4 +47,9 @@ public class SparkMaxMotor implements BaseMotor {
         config.idleMode(mode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
         applyConfig();
     }
+
+    @Override
+    public boolean getBreak() {
+        return motor.configAccessor.getIdleMode() == SparkBaseConfig.IdleMode.kBrake;
+    }
 }

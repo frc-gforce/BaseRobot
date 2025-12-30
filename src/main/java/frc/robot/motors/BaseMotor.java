@@ -7,4 +7,5 @@ public interface BaseMotor {
     MotorConfig<?> getConfig();
     void applyConfig();
     void setBreak(boolean mode);
+    boolean getBreak();
     }
