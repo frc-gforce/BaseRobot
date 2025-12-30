@@ -8,4 +8,6 @@ public interface BaseMotor {
     void applyConfig();
     void setBreak(boolean mode);
     boolean getBreak();
+    double getSpeed();
+    double getCurrent();
     }

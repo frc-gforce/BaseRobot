@@ -60,4 +60,14 @@ public enum Motors implements BaseMotor {
     public boolean getBreak() {
         return motor.getBreak();
     }
+
+    @Override
+    public double getSpeed() {
+        return motor.getSpeed();
+    }
+
+    @Override
+    public double getCurrent() {
+        return motor.getCurrent();
+    }
 }

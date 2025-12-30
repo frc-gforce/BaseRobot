@@ -52,4 +52,14 @@ public class SparkMaxMotor implements BaseMotor {
     public boolean getBreak() {
         return motor.configAccessor.getIdleMode() == SparkBaseConfig.IdleMode.kBrake;
     }
+
+    @Override
+    public double getSpeed() {
+        return motor.get();
+    }
+
+    @Override
+    public double getCurrent() {
+        return motor.getOutputCurrent();
+    }
 }
