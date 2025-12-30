@@ -1,30 +1,27 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Motors;
+import frc.robot.motors.BaseMotor;
+import frc.robot.motors.Motors;
 import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
-    private final SparkMax leftFront = new SparkMax(1, MotorType.kBrushed);
+    private final BaseMotor leftFront = Motors.LEFT_FRONT; //new SparkMax(1, MotorType.kBrushed);
 //    private final PWMVictorSPX leftBack = new PWMVictorSPX(1);
-    private final SparkMax rightFront = new SparkMax(2, MotorType.kBrushed);
+    private final BaseMotor rightFront = Motors.RIGHT_FRONT; //new SparkMax(2, MotorType.kBrushed);
 //    private final PWMVictorSPX rightBack = new PWMVictorSPX(3);
 
-    private final DifferentialDrive drive = new DifferentialDrive(leftFront, rightFront);
+    private final DifferentialDrive drive = new DifferentialDrive(leftFront.getMotor().get(), rightFront.getMotor().get());
 
     private final Field2d field = new Field2d();
 
@@ -45,8 +42,8 @@ public class Drivetrain extends SubsystemBase {
         rightConfig = new SparkMaxConfig()
                 .inverted(false);
 //                .idleMode(IdleMode.kBrake);
-        leftFront.configure(leftConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-        rightFront.configure(rightConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+//        leftFront.configure(leftConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+//        rightFront.configure(rightConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
         SmartDashboard.putData("Field", field);
     }
@@ -64,8 +61,8 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftFront.get());
-        Logger.recordOutput("Motors/Output/RightFrontSpeed", rightFront.get());
+        Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftFront.getSpeed());
+        Logger.recordOutput("Motors/Output/RightFrontSpeed", rightFront.getSpeed());
         double dt = 0.02;
         double maxLinearSpeed = 3.0;
         double trackWidth = 0.6;
