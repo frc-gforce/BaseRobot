@@ -2,6 +2,9 @@ package frc.robot.motors;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+/**
+ * Enumeration representing all the motors on the robot.
+ */
 public enum Motors {
     FRONT_LEFT(1, "Front Left Motor", MotorType.kBrushed),
     FRONT_RIGHT(2, "Front Right Motor", MotorType.kBrushed);
