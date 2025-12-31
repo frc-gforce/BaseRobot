@@ -55,6 +55,7 @@ public class RobotContainer
         configureBindings();
         frontLeftMotor = new SparkMaxMotor(Motors.FRONT_LEFT.id, Motors.FRONT_LEFT.type);
         frontRightMotor = new SparkMaxMotor(Motors.FRONT_RIGHT.id, Motors.FRONT_RIGHT.type);
+        frontLeftMotor.setInverted(true);
         drivetrain = new Drivetrain(frontLeftMotor, frontRightMotor);
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
