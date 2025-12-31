@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.SparkLowLevel;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,9 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.DriveArcadeCommand;
 import frc.robot.commands.DriveTankCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.motors.BaseMotor;
+import frc.robot.motors.Motors;
+import frc.robot.motors.SparkMaxMotor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer
 {
-    private final Drivetrain drivetrain = new Drivetrain();
+    private final Drivetrain drivetrain;
     private final Joystick driver = new Joystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
     // The robot's subsystems and commands are defined here...
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
@@ -40,13 +44,18 @@ public class RobotContainer
             new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
-    
+
+    private final BaseMotor frontLeftMotor;
+    private final BaseMotor frontRightMotor;
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
         // Configure the trigger bindings
         configureBindings();
+        frontLeftMotor = new SparkMaxMotor(Motors.FRONT_LEFT.id, Motors.FRONT_LEFT.type);
+        frontRightMotor = new SparkMaxMotor(Motors.FRONT_RIGHT.id, Motors.FRONT_RIGHT.type);
+        drivetrain = new Drivetrain(frontLeftMotor, frontRightMotor);
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
