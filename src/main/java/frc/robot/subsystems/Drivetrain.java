@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -8,14 +7,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
-import frc.robot.motors.Motors;
 import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
-    private final BaseMotor leftFront = Motors.LEFT_FRONT;
-    private final BaseMotor rightFront = Motors.RIGHT_FRONT;
+    private final BaseMotor leftMotor;
+    private final BaseMotor rightMotor;
 
-    private final DifferentialDrive drive = new DifferentialDrive(leftFront::setSpeed, rightFront::setSpeed);
+    private final DifferentialDrive drive;
 
     private final Field2d field = new Field2d();
 
@@ -26,7 +24,10 @@ public class Drivetrain extends SubsystemBase {
     private double lastLeftCmd = 0.0;
     private double lastRightCmd = 0.0;
 
-    public Drivetrain() {
+    public Drivetrain(BaseMotor left, BaseMotor right) {
+        leftMotor = left;
+        rightMotor = right;
+        drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
         SmartDashboard.putData("Field", field);
     }
 
@@ -43,8 +44,8 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftFront.getSpeed());
-        Logger.recordOutput("Motors/Output/RightFrontSpeed", rightFront.getSpeed());
+        Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
+        Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         double dt = 0.02;
         double maxLinearSpeed = 3.0;
         double trackWidth = 0.6;
