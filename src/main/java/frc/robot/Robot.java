@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -48,6 +49,9 @@ public class Robot extends LoggedRobot
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/logs/"));
         Logger.addDataReceiver(new NT4Publisher());
         Logger.start();
+        if (!SmartDashboard.getEntry("Drive Power %").exists()) {
+            SmartDashboard.setDefaultNumber("Drive Power %", 100.0);
+        }
     }
 
     /**

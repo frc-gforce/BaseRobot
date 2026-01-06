@@ -56,11 +56,13 @@ public class RobotContainer
         frontLeftMotor = new SparkMaxMotor(Motors.FRONT_LEFT.id, Motors.FRONT_LEFT.type);
         frontRightMotor = new SparkMaxMotor(Motors.FRONT_RIGHT.id, Motors.FRONT_RIGHT.type);
         frontLeftMotor.setInverted(true);
+        frontRightMotor.setInverted(false);
+        frontLeftMotor.setBreak(false);
+        frontRightMotor.setBreak(false);
         drivetrain = new Drivetrain(frontLeftMotor, frontRightMotor);
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
-        SmartDashboard.putNumber("Drive Power %", 100.0);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
     }
     
@@ -83,6 +85,11 @@ public class RobotContainer
         // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
         // cancelling on release.
         driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
+    }
+
+    private void switchBreak() {
+        frontLeftMotor.setBreak(!frontLeftMotor.getBreak());
+        frontRightMotor.setBreak(!frontRightMotor.getBreak());
     }
 
     public void pressButtons(MotorControlDrive motor) {
