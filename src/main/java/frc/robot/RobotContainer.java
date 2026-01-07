@@ -45,7 +45,7 @@ public class RobotContainer
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
 
-    private final BaseMotor frontLeftMotor;
+    private final BaseMotor<?, ?> frontLeftMotor;
     private final BaseMotor frontRightMotor;
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
