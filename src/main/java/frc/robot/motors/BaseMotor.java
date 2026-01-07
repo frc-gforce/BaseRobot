@@ -2,8 +2,11 @@ package frc.robot.motors;
 
 /**
  * BaseMotor interface defines common methods for motor control and configuration.
+ *
+ * @param <T> Motor type
+ * @param <CT> Configurator type
  */
-public interface BaseMotor {
+public interface BaseMotor<T, CT> {
     /**
      * Sets the speed of the motor.
      * @param speed The speed to set, ranging from {@code -1.0} (full reverse) to {@code 1.0} (full forward).
@@ -14,7 +17,7 @@ public interface BaseMotor {
      * Gets the motor object.
      * @return The motor object.
      */
-    Motor<?> getMotor();
+    T getMotor();
 
     /**
      * Sets the inversion state of the motor.
@@ -26,12 +29,12 @@ public interface BaseMotor {
      * Gets the motor configuration.
      * @return The motor configuration.
      */
-    MotorConfig<?> getConfig();
+    CT getConfig();
 
     /**
      * Applies the motor configuration.
      */
-    void applyConfig();
+    void applyConfig(CT config);
 
     /**
      * Sets the break mode of the motor.

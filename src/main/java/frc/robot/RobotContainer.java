@@ -17,6 +17,7 @@ import frc.robot.commands.DriveTankCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.motors.BaseMotor;
 import frc.robot.motors.Motors;
+import frc.robot.motors.SparkBaseMotor;
 import frc.robot.motors.SparkMaxMotor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -45,8 +46,8 @@ public class RobotContainer
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
 
-    private final BaseMotor frontLeftMotor;
-    private final BaseMotor frontRightMotor;
+    private final SparkBaseMotor frontLeftMotor;
+    private final SparkBaseMotor frontRightMotor;
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()

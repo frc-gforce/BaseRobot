@@ -1,13 +1,12 @@
 package frc.robot.motors;
 
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-public class SparkMaxMotor implements BaseMotor {
+public class SparkMaxMotor implements SparkBaseMotor {
     private final SparkMax motor;
     private final SparkBaseConfig config;
 
@@ -22,30 +21,30 @@ public class SparkMaxMotor implements BaseMotor {
     }
 
     @Override
-    public Motor<SparkMax> getMotor() {
-        return new Motor<>(motor);
+    public SparkMax getMotor() {
+        return motor;
     }
 
     @Override
     public void setInverted(boolean isInverted) {
         config.inverted(isInverted);
-        applyConfig();
+        applyConfig(getConfig());
     }
 
     @Override
-    public MotorConfig<SparkBaseConfig> getConfig() {
-        return new MotorConfig<>(config);
+    public SparkBaseConfig getConfig() {
+        return config;
     }
 
     @Override
-    public void applyConfig() {
+    public void applyConfig(SparkBaseConfig config) {
         motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     @Override
     public void setBreak(boolean mode) {
         config.idleMode(mode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
-        applyConfig();
+        applyConfig(getConfig());
     }
 
     @Override

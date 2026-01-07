@@ -5,9 +5,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-public class TalonFXMotor implements BaseMotor {
+public class TalonFXMotor implements TalonBaseMotor {
     private final TalonFX motor;
-    private TalonFXConfiguration config;
+    private final TalonFXConfiguration config;
 
     public TalonFXMotor(int id) {
         //TODO change CANBus to dynamic
@@ -20,23 +20,23 @@ public class TalonFXMotor implements BaseMotor {
     }
 
     @Override
-    public Motor<?> getMotor() {
-        return new Motor<>(motor);
+    public TalonFX getMotor() {
+        return motor;
     }
 
     @Override
     public void setInverted(boolean inverted) {
         config.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        applyConfig();
+        applyConfig(getConfig());
     }
 
     @Override
-    public MotorConfig<?> getConfig() {
-        return new MotorConfig<>(config);
+    public TalonFXConfiguration getConfig() {
+        return config;
     }
 
     @Override
-    public void applyConfig() {
+    public void applyConfig(TalonFXConfiguration config) {
         motor.getConfigurator().apply(config);
     }
 
