@@ -53,4 +53,12 @@ public interface GenericCommandController {
     Trigger faceRight();
     Trigger faceRight(EventLoop loop);
     //</editor-fold>
+
+    //<editor-fold desc="Joysticks">
+    double getLeftX();
+    double getLeftY();
+
+    double getRightX();
+    double getRightY();
+    //</editor-fold>
 }
