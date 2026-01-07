@@ -24,7 +24,7 @@ public class Drivetrain extends SubsystemBase {
     private double lastLeftCmd = 0.0;
     private double lastRightCmd = 0.0;
 
-    public Drivetrain(BaseMotor left, BaseMotor right) {
+    public Drivetrain(BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
         leftMotor = left;
         rightMotor = right;
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
