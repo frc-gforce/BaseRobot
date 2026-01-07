@@ -1,7 +1,6 @@
 package frc.robot.motors;
 
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -34,7 +33,7 @@ public class SparkMaxMotor implements SparkBaseMotor {
 
     @Override
     public SparkBaseConfig getConfig() {
-        return new SparkMaxConfig();
+        return config;
     }
 
     @Override
