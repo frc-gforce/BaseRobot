@@ -6,9 +6,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig;
 
-public class TalonFXMotor implements BaseMotor<TalonFX, TalonFXConfiguration> {
+public class TalonFXMotor implements TalonBaseMotor {
     private final TalonFX motor;
-    private TalonFXConfiguration config;
+    private final TalonFXConfiguration config;
 
     public TalonFXMotor(int id) {
         //TODO change CANBus to dynamic

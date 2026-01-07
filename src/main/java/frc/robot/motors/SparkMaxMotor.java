@@ -7,7 +7,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-public class SparkMaxMotor implements BaseMotor<SparkMax, SparkBaseConfig> {
+public class SparkMaxMotor implements SparkBaseMotor {
     private final SparkMax motor;
     private final SparkBaseConfig config;
 
