@@ -1,6 +1,7 @@
 package frc.robot.motors;
 
-import com.revrobotics.spark.SparkBase;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -38,7 +39,7 @@ public class SparkMaxMotor implements SparkBaseMotor {
 
     @Override
     public void applyConfig(SparkBaseConfig config) {
-        motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
