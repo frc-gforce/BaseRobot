@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 
 public class Drivetrain extends SubsystemBase {
     private final BaseMotor leftMotor;
@@ -16,6 +19,8 @@ public class Drivetrain extends SubsystemBase {
     private final DifferentialDrive drive;
 
     private final Field2d field = new Field2d();
+
+    private Pose2d robotPose = new Pose2d(1.0, 2.0, new Rotation2d());
 
     private double xMeters = 0.0;
     private double yMeters = 0.0;
@@ -62,5 +67,17 @@ public class Drivetrain extends SubsystemBase {
         yMeters += v * Math.sin(headingRad) * dt;
 
         field.setRobotPose(new Pose2d(xMeters, yMeters, new Rotation2d(headingRad)));
+    }
+
+    public void simulationPeriodic() {
+        robotPose = new Pose2d(
+                robotPose.getX(),
+                robotPose.getY(),
+                robotPose.getRotation()
+        );
+
+        Logger.recordOutput("RobotPose", robotPose);
+        Logger.recordOutput("RobotX", robotPose.getX());
+        Logger.recordOutput("RobotY", robotPose.getY());
     }
 }
