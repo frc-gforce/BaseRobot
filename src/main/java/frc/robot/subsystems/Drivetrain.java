@@ -58,6 +58,9 @@ public class Drivetrain extends SubsystemBase {
         return "Robot/Drivetrain";
     }
 
+    /**
+     * Updates the robot's pose based on motor speeds and time step.
+     */
     private void updatePose() {
         double lSpeed = leftMotor.getSpeed();
         double rSpeed = rightMotor.getSpeed();
