@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 public class SparkMaxMotor implements SparkBaseMotor {
     private final SparkMax motor;
     private final SparkBaseConfig config;
+    private double currentLimit = 0;
 
     public SparkMaxMotor(int id, MotorType type) {
         motor = new SparkMax(id, type);
@@ -61,5 +62,41 @@ public class SparkMaxMotor implements SparkBaseMotor {
     @Override
     public double getCurrent() {
         return motor.getOutputCurrent();
+    }
+
+    @Override
+    public void setCurrentLimit(double limit) {
+        config.smartCurrentLimit((int) limit);
+        currentLimit = limit;
+        applyConfig(config);
+    }
+
+    @Override
+    public double getCurrentLimit() {
+        return currentLimit;
+    }
+
+    @Override
+    public void toggleCurrentLimit() {
+        if(currentLimit == 0){
+            config.smartCurrentLimit(40);
+            currentLimit = 40;
+        }else{
+            config.smartCurrentLimit(0);
+            currentLimit = 0;
+        }
+        applyConfig(config);
+    }
+
+    @Override
+    public void toggleCurrentLimit(boolean mode) {
+        if(mode){
+            config.smartCurrentLimit(40);
+            currentLimit = 40;
+        }else{
+            config.smartCurrentLimit(0);
+            currentLimit = 0;
+        }
+        applyConfig(config);
     }
 }

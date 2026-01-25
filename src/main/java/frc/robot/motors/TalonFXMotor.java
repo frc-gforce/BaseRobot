@@ -1,5 +1,6 @@
 package frc.robot.motors;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -8,11 +9,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class TalonFXMotor implements TalonBaseMotor {
     private final TalonFX motor;
     private final TalonFXConfiguration config;
+    private final CurrentLimitsConfigs limitConfigs;
 
     public TalonFXMotor(int id) {
         //TODO change CANBus to dynamic
         motor = new TalonFX(id);
         config = new TalonFXConfiguration();
+        limitConfigs = new CurrentLimitsConfigs();
     }
     @Override
     public void setSpeed(double speed) {
@@ -59,5 +62,26 @@ public class TalonFXMotor implements TalonBaseMotor {
     @Override
     public double getCurrent() {
         return motor.getTorqueCurrent().getValueAsDouble();
+    }
+
+    @Override
+    public void setCurrentLimit(double limit) {
+        limitConfigs.SupplyCurrentLimit = limit;
+        limitConfigs.SupplyCurrentLimitEnable = true;
+    }
+
+    @Override
+    public double getCurrentLimit() {
+        return limitConfigs.SupplyCurrentLimit;
+    }
+
+    @Override
+    public void toggleCurrentLimit() {
+        limitConfigs.SupplyCurrentLimitEnable = !limitConfigs.SupplyCurrentLimitEnable;
+    }
+
+    @Override
+    public void toggleCurrentLimit(boolean mode) {
+        limitConfigs.SupplyCurrentLimitEnable = mode;
     }
 }

@@ -59,4 +59,30 @@ public interface BaseMotor<T, CT> {
      * @return The current draw of the motor.
      */
     double getCurrent();
+
+
+    /**
+     * Sets the current limit and apply it.
+     * @param limit the current limit
+     */
+    void setCurrentLimit(double limit);
+
+
+    /**
+     * Gets the current limit of the motor.
+     * @return the current limit.
+     */
+    double getCurrentLimit();
+
+    /**
+     * toggle the current limit on and off.
+     */
+    void toggleCurrentLimit();
+
+
+    /**
+     * toggle the current limit.
+     * @param mode the mode to switch to.
+     */
+    void toggleCurrentLimit(boolean mode);
     }
