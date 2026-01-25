@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -48,6 +49,9 @@ public class Robot extends LoggedRobot
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/logs/"));
         Logger.addDataReceiver(new NT4Publisher());
         Logger.start();
+        if (!SmartDashboard.getEntry("Drive Power %").exists()) {
+            SmartDashboard.setDefaultNumber("Drive Power %", 100.0);
+        }
     }
 
     /**
@@ -88,7 +92,7 @@ public class Robot extends LoggedRobot
         // schedule the autonomous command (example)
         if (autonomousCommand != null)
         {
-            autonomousCommand.schedule();
+            CommandScheduler.getInstance().schedule(autonomousCommand);
         }
     }
     
@@ -105,7 +109,7 @@ public class Robot extends LoggedRobot
 
         Command driveCommand = robotContainer.getDriveCommand();
         if (driveCommand != null)
-            driveCommand.schedule();
+            CommandScheduler.getInstance().schedule(driveCommand);
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
@@ -144,7 +148,4 @@ public class Robot extends LoggedRobot
     @Override
     public void simulationPeriodic() {}
 
-    public MotorControlDrive getMotorControlDrive() {
-        return null;
-    }
 }

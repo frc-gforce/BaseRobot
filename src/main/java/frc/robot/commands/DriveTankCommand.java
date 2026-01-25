@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.controller.GenericCommandController;
 import frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.math.MathUtil.applyDeadband;
@@ -9,9 +9,9 @@ import static edu.wpi.first.math.MathUtil.applyDeadband;
 
 public class DriveTankCommand extends Command {
     private final Drivetrain drivetrain;
-    private final CommandXboxController driver;
+    private final GenericCommandController driver;
 
-    public DriveTankCommand(Drivetrain drivetrain, CommandXboxController driver) {
+    public DriveTankCommand(Drivetrain drivetrain, GenericCommandController driver) {
         this.drivetrain = drivetrain;
         this.driver = driver;
         // each subsystem used by the command must be passed into the

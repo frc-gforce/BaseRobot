@@ -5,7 +5,6 @@
 
 package frc.robot;
 
-import com.revrobotics.spark.SparkLowLevel;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +14,8 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.DriveArcadeCommand;
 import frc.robot.commands.DriveTankCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.controller.GenericCommandController;
+import frc.robot.controller.PS4CommandController;
 import frc.robot.motors.BaseMotor;
 import frc.robot.motors.Motors;
 import frc.robot.motors.SparkBaseMotor;
@@ -41,8 +42,8 @@ public class RobotContainer
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     
     // Replace with CommandPS4Controller or CommandJoystick if needed
-    private final CommandXboxController driverController =
-            new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+    private final GenericCommandController driverController =
+            new PS4CommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
 
@@ -57,11 +58,13 @@ public class RobotContainer
         frontLeftMotor = new SparkMaxMotor(Motors.FRONT_LEFT.id, Motors.FRONT_LEFT.type);
         frontRightMotor = new SparkMaxMotor(Motors.FRONT_RIGHT.id, Motors.FRONT_RIGHT.type);
         frontLeftMotor.setInverted(true);
+        frontRightMotor.setInverted(false);
+        frontLeftMotor.setBreak(false);
+        frontRightMotor.setBreak(false);
         drivetrain = new Drivetrain(frontLeftMotor, frontRightMotor);
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
-        SmartDashboard.putNumber("Drive Power %", 100.0);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
     }
     
@@ -83,16 +86,15 @@ public class RobotContainer
         
         // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
         // cancelling on release.
-        driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
+//        driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
+        driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
     }
 
-    public void pressButtons(MotorControlDrive motor) {
-        System.out.println("Press buttons on driver controller to drive");
-        driverController.a().onTrue(new InstantCommand(() -> motor.drive(0.5)));
-        driverController.x().onTrue(new InstantCommand(() -> motor.drive(-0.2)));
-        driverController.b().onTrue(new InstantCommand(motor::invertDirections));
-        driverController.y().onTrue(new InstantCommand(motor::stop));
+    private void switchBreak() {
+        frontLeftMotor.setBreak(!frontLeftMotor.getBreak());
+        frontRightMotor.setBreak(!frontRightMotor.getBreak());
     }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
