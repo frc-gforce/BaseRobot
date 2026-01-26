@@ -1,15 +1,15 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
+import frc.robot.subsystems.GenericSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-public class Drivetrain extends SubsystemBase {
+public class Drivetrain extends GenericSubsystem {
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
 
@@ -24,7 +24,8 @@ public class Drivetrain extends SubsystemBase {
     private double lastLeftCmd = 0.0;
     private double lastRightCmd = 0.0;
 
-    public Drivetrain(BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
+    public Drivetrain(DrivetrainConstants constants, BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
+        super(constants.logPath());
         leftMotor = left;
         rightMotor = right;
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
@@ -43,7 +44,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
+    public void subsystemPeriodic() {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         double dt = 0.02;
