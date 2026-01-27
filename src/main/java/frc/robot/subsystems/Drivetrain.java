@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
 import org.littletonrobotics.junction.Logger;
 
+
 public class Drivetrain extends SubsystemBase {
+
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
 
@@ -17,12 +19,13 @@ public class Drivetrain extends SubsystemBase {
 
     private final Field2d field = new Field2d();
 
-    private double xMeters = 0.0;
-    private double yMeters = 0.0;
-    private double headingRad = 0.0;
+    private Pose2d robotPose = new Pose2d(1.0, 2.0, new Rotation2d());
 
-    private double lastLeftCmd = 0.0;
-    private double lastRightCmd = 0.0;
+    // The X robot pose by meters
+    private double xMeters = 0.0;
+    // The Y robot pose by meters
+    private double yMeters = 0.0;
+    private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
     public Drivetrain(BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
         leftMotor = left;
@@ -32,8 +35,6 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void tankDrive(double left, double right) {
-        lastLeftCmd = left;
-        lastRightCmd = right;
 
         drive.tankDrive(left, right);
     }
@@ -46,21 +47,47 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
+        updatePose();
+    }
+
+    public Pose2d getRobotPose() {
+        return robotPose;
+    }
+
+    public String getLogPath() {
+        return "Robot/Drivetrain";
+    }
+
+    /**
+     * Updates the robot's pose based on motor speeds and time step.
+     */
+    private void updatePose() {
+        double lSpeed = leftMotor.getSpeed();
+        double rSpeed = rightMotor.getSpeed();
+
         double dt = 0.02;
         double maxLinearSpeed = 3.0;
         double trackWidth = 0.6;
 
-        double vL = lastLeftCmd * maxLinearSpeed;
-        double vR = lastRightCmd * maxLinearSpeed;
+        double vL = lSpeed * maxLinearSpeed;
+        double vR = rSpeed * maxLinearSpeed;
 
         double v = (vL + vR) / 2.0;
         double omega = (vR - vL) / trackWidth;
 
-        headingRad += omega * dt;
+        headingRotation = headingRotation.plus(Rotation2d.fromRadians(omega * dt));
 
-        xMeters += v * Math.cos(headingRad) * dt;
-        yMeters += v * Math.sin(headingRad) * dt;
+        xMeters += v * Math.cos(headingRotation.getRadians()) * dt;
+        yMeters += v * Math.sin(headingRotation.getRadians()) * dt;
 
-        field.setRobotPose(new Pose2d(xMeters, yMeters, new Rotation2d(headingRad)));
+        robotPose = new Pose2d(xMeters, yMeters, headingRotation);
+
+        field.setRobotPose(robotPose);
+        Logger.recordOutput(getLogPath() + "/Pose", robotPose);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        Logger.recordOutput(getLogPath() + "/Angle", headingRotation);
     }
 }
