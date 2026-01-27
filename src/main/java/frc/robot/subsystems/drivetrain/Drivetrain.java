@@ -9,6 +9,9 @@ import frc.robot.motors.BaseMotor;
 import frc.robot.subsystems.GenericSubsystem;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Controls the drivetrain mechanisms.
+ */
 public class Drivetrain extends GenericSubsystem {
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
@@ -24,6 +27,12 @@ public class Drivetrain extends GenericSubsystem {
     private double lastLeftCmd = 0.0;
     private double lastRightCmd = 0.0;
 
+    /**
+     * Controls the drivetrain mechanisms.
+     * @param constants The constants for the drivetrain
+     * @param left The left motor
+     * @param right The right motor
+     */
     public Drivetrain(DrivetrainConstants constants, BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
         super(constants.logPath());
         leftMotor = left;
@@ -32,6 +41,11 @@ public class Drivetrain extends GenericSubsystem {
         SmartDashboard.putData("Field", field);
     }
 
+    /**
+     * Drives the robot using tank controls.
+     * @param left The left side speed
+     * @param right The right side speed
+     */
     public void tankDrive(double left, double right) {
         lastLeftCmd = left;
         lastRightCmd = right;
@@ -39,6 +53,11 @@ public class Drivetrain extends GenericSubsystem {
         drive.tankDrive(left, right);
     }
 
+    /**
+     * Drives the robot using arcade controls.
+     * @param forward The forward/backword speed
+     * @param right The right/left turn speed
+     */
     public void arcadeDrive(double forward, double right) {
         drive.arcadeDrive(forward, right);
     }

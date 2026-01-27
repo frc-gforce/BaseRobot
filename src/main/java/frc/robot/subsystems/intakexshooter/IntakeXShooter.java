@@ -8,7 +8,7 @@ import frc.robot.subsystems.GenericSubsystem;
  * Controls the ball collecting and shooting mechanisms
  */
 public class IntakeXShooter extends GenericSubsystem {
-    private final IntakeXShooterConstants constants;
+    private final IntakeXShooterConstants constants; //constants to the subsystem
     private final BaseMotor motor; //the motor used
     private double targetSpeed; //shooting speed
     private double speedError; //the offset for speed check
