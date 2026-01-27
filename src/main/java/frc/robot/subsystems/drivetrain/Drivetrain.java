@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
 import org.littletonrobotics.junction.Logger;
 
-
+/**
+ * Controls the drivetrain mechanisms.
+ */
 public class Drivetrain extends SubsystemBase {
 
     private final BaseMotor leftMotor;
@@ -27,24 +29,43 @@ public class Drivetrain extends SubsystemBase {
     private double yMeters = 0.0;
     private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
-    public Drivetrain(BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
+    /**
+     * Controls the drivetrain mechanisms.
+     * @param constants The constants for the drivetrain
+     * @param left The left motor
+     * @param right The right motor
+     */
+    public Drivetrain(DrivetrainConstants constants, BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
+        super(constants.logPath());
         leftMotor = left;
         rightMotor = right;
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
         SmartDashboard.putData("Field", field);
     }
 
+    /**
+     * Drives the robot using tank controls.
+     * @param left The left side speed
+     * @param right The right side speed
+     */
     public void tankDrive(double left, double right) {
+        lastLeftCmd = left;
+        lastRightCmd = right;
 
         drive.tankDrive(left, right);
     }
 
+    /**
+     * Drives the robot using arcade controls.
+     * @param forward The forward/backword speed
+     * @param right The right/left turn speed
+     */
     public void arcadeDrive(double forward, double right) {
         drive.arcadeDrive(forward, right);
     }
 
     @Override
-    public void periodic() {
+    public void subsystemPeriodic() {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         updatePose();

@@ -1,34 +1,39 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intakexshooter;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.motors.BaseMotor;
+import frc.robot.subsystems.GenericSubsystem;
 
 /**
  * Controls the ball collecting and shooting mechanisms
  */
-public class IntakeXShooter extends SubsystemBase {
-    private final BaseMotor motor;    //the motor used
-    private double targetSpeed = OperatorConstants.SHOOTER_TARGET_SPEED;    //shooting speed
-    private double speedError = OperatorConstants.SHOOTER_SPEED_ERROR; //the offset for speed check
+public class IntakeXShooter extends GenericSubsystem {
+    private final IntakeXShooterConstants constants; //constants to the subsystem
+    private final BaseMotor motor; //the motor used
+    private double targetSpeed; //shooting speed
+    private double speedError; //the offset for speed check
 
     /**
      * Controls the ball collecting and shooting mechanisms
+     * @param constants The constants used in the system
      * @param motor The motor used in the system
      */
-    public IntakeXShooter(BaseMotor<?, ?> motor) //builds object with default values
+    public IntakeXShooter(IntakeXShooterConstants constants, BaseMotor<?, ?> motor) //builds object with default values
     {
-        this.motor = motor;
+        this(constants, motor, OperatorConstants.SHOOTER_TARGET_SPEED, OperatorConstants.SHOOTER_SPEED_ERROR);
     }
 
     /**
      * Controls the ball collecting and shooting mechanisms
+     * @param constants The constants used in the system
      * @param motor The motor used in the system
-     * @param targetSpeed The speed needed in order to shoot
+     * @param targetSpeed The speed needed to shoot
      * @param speedError Determines how far can the speed be from the target speed
      */
-    public IntakeXShooter(BaseMotor motor, double targetSpeed, double speedError)      //builds object with set values
+    public IntakeXShooter(IntakeXShooterConstants constants, BaseMotor motor, double targetSpeed, double speedError)      //builds object with set values
     {
+        super(constants.logPath());
+        this.constants = constants;
         this.motor = motor;
         this.targetSpeed = targetSpeed;
         this.speedError = speedError;
