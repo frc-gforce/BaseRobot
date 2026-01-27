@@ -40,6 +40,14 @@ public class IntakeXShooter extends GenericSubsystem {
     }
 
     /**
+     * Sets the speed of the motor
+     * @param speed The speed to set the motor to
+     */
+    public void setMotorSpeed(double speed) {
+        motor.setSpeed(speed);
+    }
+
+    /**
      * Returns the target speed needed inorder to shoot
      * @return target speed
      */

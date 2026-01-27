@@ -1,18 +1,25 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
+import frc.robot.subsystems.GenericSubsystem;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.Objects;
+
+import static java.util.Objects.*;
 
 /**
  * Controls the drivetrain mechanisms.
  */
-public class Drivetrain extends SubsystemBase {
+@SuppressWarnings("rawtypes")
+public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
 
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
@@ -32,15 +39,36 @@ public class Drivetrain extends SubsystemBase {
     /**
      * Controls the drivetrain mechanisms.
      * @param constants The constants for the drivetrain
-     * @param left The left motor
-     * @param right The right motor
+     * @param frontLeft The front left motor
+     * @param frontRight The front right motor
+     * @param backLeft The back left motor (optional)
+     * @param backRight The back right motor (optional)
      */
-    public Drivetrain(DrivetrainConstants constants, BaseMotor<?, ?> left, BaseMotor<?, ?> right) {
+    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
         super(constants.logPath());
-        leftMotor = left;
-        rightMotor = right;
+        if (nonNull(backLeft) != nonNull(backRight)) {
+            throw new IllegalArgumentException("Both back motors must be specified or neither.");
+        }
+        leftMotor = frontLeft;
+        rightMotor = frontRight;
+        if (nonNull(backLeft)) {
+            follow(frontLeft, backLeft);
+            follow(frontRight, backRight);
+        }
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
         SmartDashboard.putData("Field", field);
+    }
+
+    /**
+     * Controls the drivetrain mechanisms.
+     * <br>
+     * Back motors are set to null.
+     * @param constants The constants for the drivetrain
+     * @param frontLeft The front left motor
+     * @param frontRight The front right motor
+     */
+    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight) {
+        this(constants, frontLeft, frontRight, null, null);
     }
 
     /**
@@ -49,9 +77,6 @@ public class Drivetrain extends SubsystemBase {
      * @param right The right side speed
      */
     public void tankDrive(double left, double right) {
-        lastLeftCmd = left;
-        lastRightCmd = right;
-
         drive.tankDrive(left, right);
     }
 
@@ -71,12 +96,12 @@ public class Drivetrain extends SubsystemBase {
         updatePose();
     }
 
+    /**
+     * Returns the robot's pose.
+     * @return The robot's current pose.
+     */
     public Pose2d getRobotPose() {
         return robotPose;
-    }
-
-    public String getLogPath() {
-        return "Robot/Drivetrain";
     }
 
     /**
@@ -110,5 +135,17 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         Logger.recordOutput(getLogPath() + "/Angle", headingRotation);
+    }
+
+    // since every class that extends BaseMotor have matching types, we didn't specify them.
+    // this makes the code more concise and readable, but giving some `unchecked` warnings.
+    /**
+     * Make the slave motor follow the master motor.
+     * @param master The motor to follow.
+     * @param slave The following motor.
+     */
+    @SuppressWarnings("unchecked")
+    private void follow(T master, @NotNull T slave) {
+        slave.follow(master, false);
     }
 }

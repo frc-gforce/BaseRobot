@@ -59,4 +59,11 @@ public interface BaseMotor<T, CT> {
      * @return The current draw of the motor.
      */
     double getCurrent();
-    }
+
+    /**
+     * Follows another motor.
+     * @param motor The motor to follow.
+     * @param invert {@code true}: invert the motor direction, {@code false}: use the default direction.
+     */
+    void follow(BaseMotor<T, CT> motor, boolean invert);
+}
