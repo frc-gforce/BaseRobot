@@ -1,20 +1,30 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.feed;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motors.BaseMotor;
+import frc.robot.subsystems.GenericSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 
-public class Feed extends SubsystemBase {
+public class Feed extends GenericSubsystem {
 
     private final BaseMotor motor;
+    private final FeedConstants constants;
     private Boolean motorActive = false;
 
     /**
      * Controls the feed mechanisms
+     * @param constants The constants for the feed subsystem
      * @param motor The motor used in the feed subsystem
      */
-    public Feed(BaseMotor<?, ?> motor) {
+    public Feed(FeedConstants constants, BaseMotor<?, ?> motor) {
+        super(constants.logPath());
         this.motor = motor;
+        this.constants = constants;
+    }
+
+    @Override
+    protected void subsystemPeriodic() {
+        Logger.recordOutput(constants.speedLogPath(), motor.getSpeed());
     }
 
     /**

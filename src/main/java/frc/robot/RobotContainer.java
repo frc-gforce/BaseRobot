@@ -10,21 +10,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.DriveArcadeCommand;
-import frc.robot.commands.DriveTankCommand;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.*;
 import frc.robot.controller.GenericCommandController;
 import frc.robot.controller.PS4CommandController;
 import frc.robot.motors.Motors;
 import frc.robot.motors.SparkBaseMotor;
 import frc.robot.motors.SparkMaxMotor;
+import frc.robot.subsystems.GenericSubsystem;
+import frc.robot.subsystems.feed.Feed;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.utils.DrivetrainConstantsFactory;
+import frc.robot.subsystems.intakexshooter.IntakeXShooter;
+import frc.robot.utils.*;
 
 
 /**
@@ -35,7 +35,10 @@ import frc.robot.utils.DrivetrainConstantsFactory;
  */
 public class RobotContainer
 {
-    private final Drivetrain drivetrain;
+    private final Drivetrain<SparkBaseMotor> drivetrain;
+    private final IntakeXShooter intakeXShooter;
+    private final Feed feed;
+
     private final Joystick driver = new Joystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
     // The robot's subsystems and commands are defined here...
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
@@ -46,29 +49,75 @@ public class RobotContainer
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
 
-    private final SparkBaseMotor frontLeftMotor;
-    private final SparkBaseMotor frontRightMotor;
+    private final SparkMaxMotor frontLeftMotor;
+    private final SparkMaxMotor frontRightMotor;
+    private final SparkMaxMotor backLeftMotor;
+    private final SparkMaxMotor backRightMotor;
+
+    private final SparkMaxMotor shootMotor;
+    private final SparkMaxMotor feedMotor;
+
+    private final Command shootCommand;
+    private final Command intakeCommand;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
-        // Configure the trigger bindings
-        configureBindings();
-        frontLeftMotor = new SparkMaxMotor(Motors.FRONT_LEFT.id, Motors.FRONT_LEFT.type);
-        frontRightMotor = new SparkMaxMotor(Motors.FRONT_RIGHT.id, Motors.FRONT_RIGHT.type);
-        frontLeftMotor.setInverted(true);
-        frontRightMotor.setInverted(false);
+        //<editor-fold desc="Motors creation">
+        frontLeftMotor = MotorFactory.createSparkMotor(Motors.FRONT_LEFT);
+        frontRightMotor = MotorFactory.createSparkMotor(Motors.FRONT_RIGHT);
+        backLeftMotor = MotorFactory.createSparkMotor(Motors.BACK_LEFT);
+        backRightMotor = MotorFactory.createSparkMotor(Motors.BACK_RIGHT);
+
+        shootMotor = MotorFactory.createSparkMotor(Motors.SHOOT);
+        feedMotor = MotorFactory.createSparkMotor(Motors.FEED);
+        //</editor-fold>
+
+        //<editor-fold desc="Default motors configs">
+        //TODO put this in a more convenient place
         frontLeftMotor.setBreak(false);
         frontRightMotor.setBreak(false);
-        drivetrain = new Drivetrain(
+        shootMotor.setBreak(false);
+        feedMotor.setBreak(false);
+        //</editor-fold>
+
+        //<editor-fold desc="Subsystems creation">
+        drivetrain = new Drivetrain<>(
                 DrivetrainConstantsFactory.createDrivetrainConstants(),
                 frontLeftMotor,
-                frontRightMotor
+                frontRightMotor,
+                backLeftMotor,
+                backRightMotor
         );
+        intakeXShooter = new IntakeXShooter(
+                IntakeXShooterConstantsFactory.createIntakeXShooterConstants(),
+                shootMotor,
+                0.5,
+                0.05
+        );
+        feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor);
+        //</editor-fold>
+
+        //<editor-fold desc="Commands creation">
+        GenericCommand tempCommand = new ShootCommand(intakeXShooter, feed);
+        shootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                tempCommand,
+                "Shoot Command"
+        );
+        tempCommand = new IntakeCommand(intakeXShooter, feed);
+        intakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                tempCommand,
+                "Intake Command"
+        );
+        //</editor-fold>
+
         driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
         driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
+
+        // Configure the trigger bindings
+        configureBindings();
     }
 
 
@@ -91,11 +140,16 @@ public class RobotContainer
         // cancelling on release.
 //        driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
         driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
+        driverController.faceRight().whileTrue(shootCommand);
+        driverController.faceUp().whileTrue(intakeCommand);
     }
 
     private void switchBreak() {
-        frontLeftMotor.setBreak(!frontLeftMotor.getBreak());
-        frontRightMotor.setBreak(!frontRightMotor.getBreak());
+        boolean breakState = frontLeftMotor.getBreak();
+        frontLeftMotor.setBreak(!breakState);
+        frontRightMotor.setBreak(!breakState);
+        backLeftMotor.setBreak(!breakState);
+        backRightMotor.setBreak(!breakState);
     }
 
     /**

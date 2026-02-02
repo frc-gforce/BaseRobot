@@ -1,8 +1,10 @@
 package frc.robot.motors;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class TalonFXMotor implements TalonBaseMotor {
@@ -59,5 +61,13 @@ public class TalonFXMotor implements TalonBaseMotor {
     @Override
     public double getCurrent() {
         return motor.getTorqueCurrent().getValueAsDouble();
+    }
+
+    @Override
+    public void follow(BaseMotor<TalonFX, TalonFXConfiguration> motor, boolean invert) {
+        motor.getMotor().setControl(new Follower(
+                this.getMotor().getDeviceID(),
+                invert ? MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned
+        ));
     }
 }

@@ -62,4 +62,10 @@ public class SparkMaxMotor implements SparkBaseMotor {
     public double getCurrent() {
         return motor.getOutputCurrent();
     }
+
+    @Override
+    public void follow(BaseMotor<SparkMax, SparkBaseConfig> motor, boolean invert) {
+        config.follow(motor.getMotor(), invert);
+        applyConfig(config);
+    }
 }
