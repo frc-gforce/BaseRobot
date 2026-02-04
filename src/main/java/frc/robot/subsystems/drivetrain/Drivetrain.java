@@ -1,7 +1,9 @@
 package frc.robot.subsystems.drivetrain;
 
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +38,9 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
     private double yMeters = 0.0;
     private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
+    DifferentialDriveOdometry odometry;
+    private Rotation2d gyroAngle = headingRotation;
+
     /**
      * Controls the drivetrain mechanisms.
      * @param constants The constants for the drivetrain
@@ -57,6 +62,9 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
         }
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
         SmartDashboard.putData("Field", field);
+
+        odometry = new DifferentialDriveOdometry(headingRotation, leftMotor.getSpeed(), rightMotor.getSpeed());
+
     }
 
     /**
@@ -94,6 +102,8 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         updatePose();
+        gyroAngle = headingRotation;
+        robotPose = odometry.update(gyroAngle, leftMotor.getSpeed(), rightMotor.getSpeed());
     }
 
     /**
