@@ -17,12 +17,13 @@ import static java.util.Objects.*;
 
 /**
  * Controls the drivetrain mechanisms.
+ * @param <T> Motor type
  */
 @SuppressWarnings("rawtypes")
 public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
 
-    private final BaseMotor leftMotor;
-    private final BaseMotor rightMotor;
+    private final T leftMotor;
+    private final T rightMotor;
 
     private final DifferentialDrive drive;
 

@@ -6,10 +6,12 @@ import frc.robot.subsystems.GenericSubsystem;
 
 /**
  * Controls the ball collecting and shooting mechanisms
+ * @param <T> Motor type
  */
-public class IntakeXShooter extends GenericSubsystem {
+@SuppressWarnings("rawtypes")
+public class IntakeXShooter<T extends BaseMotor> extends GenericSubsystem {
     private final IntakeXShooterConstants constants; //constants to the subsystem
-    private final BaseMotor motor; //the motor used
+    private final T motor; //the motor used
     private double targetSpeed; //shooting speed
     private double speedError; //the offset for speed check
 
@@ -18,7 +20,7 @@ public class IntakeXShooter extends GenericSubsystem {
      * @param constants The constants used in the system
      * @param motor The motor used in the system
      */
-    public IntakeXShooter(IntakeXShooterConstants constants, BaseMotor<?, ?> motor) //builds object with default values
+    public IntakeXShooter(IntakeXShooterConstants constants, T motor) //builds object with default values
     {
         this(constants, motor, OperatorConstants.SHOOTER_TARGET_SPEED, OperatorConstants.SHOOTER_SPEED_ERROR);
     }
@@ -30,7 +32,7 @@ public class IntakeXShooter extends GenericSubsystem {
      * @param targetSpeed The speed needed to shoot
      * @param speedError Determines how far can the speed be from the target speed
      */
-    public IntakeXShooter(IntakeXShooterConstants constants, BaseMotor motor, double targetSpeed, double speedError)      //builds object with set values
+    public IntakeXShooter(IntakeXShooterConstants constants, T motor, double targetSpeed, double speedError)      //builds object with set values
     {
         super(constants.logPath());
         this.constants = constants;
