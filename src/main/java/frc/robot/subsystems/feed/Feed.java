@@ -4,10 +4,14 @@ import frc.robot.motors.BaseMotor;
 import frc.robot.subsystems.GenericSubsystem;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ *
+ * @param <T> Motor type
+ */
+@SuppressWarnings("rawtypes")
+public class Feed<T extends BaseMotor> extends GenericSubsystem {
 
-public class Feed extends GenericSubsystem {
-
-    private final BaseMotor motor;
+    private final T motor;
     private final FeedConstants constants;
     private Boolean motorActive = false;
 
@@ -16,7 +20,7 @@ public class Feed extends GenericSubsystem {
      * @param constants The constants for the feed subsystem
      * @param motor The motor used in the feed subsystem
      */
-    public Feed(FeedConstants constants, BaseMotor<?, ?> motor) {
+    public Feed(FeedConstants constants, T motor) {
         super(constants.logPath());
         this.motor = motor;
         this.constants = constants;
@@ -31,7 +35,7 @@ public class Feed extends GenericSubsystem {
      * Returns the motor of the feed's subsystem
      * @return The motor
      */
-    public BaseMotor getMotor() {
+    public T getMotor() {
         return motor;
     }
 
