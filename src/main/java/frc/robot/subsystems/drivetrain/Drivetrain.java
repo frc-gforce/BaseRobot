@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.motors.BaseMotor;
 import frc.robot.subsystems.GenericSubsystem;
 import org.jetbrains.annotations.NotNull;
@@ -147,5 +148,16 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
     @SuppressWarnings("unchecked")
     private void follow(T master, @NotNull T slave) {
         slave.follow(master, false);
+    }
+
+    public Command autonomousCommand() {
+        return run(
+                () -> {
+                    // TODO: implement autonomous driving
+                    System.out.println("Autonomous!");
+                    // Get to position
+                    // Shoot for X seconds
+                    // Collect more balls
+                });
     }
 }
