@@ -8,7 +8,6 @@ public class LimelightUtils {
 
     /**
      * Checks if the robot currently has a target
-     *
      * @return true if it has a target, false otherwise
      */
     public static boolean hasTarget() {
@@ -17,19 +16,10 @@ public class LimelightUtils {
 
     /**
      * Returns the robot's 3d position in the field
-     *
      * @return The robot's 3d position
      */
-    public static Pose3d getPose3d() {
+    public static Pose3d getPose3d()
+    {
         return LimelightHelpers.getBotPose3d_wpiBlue(NAME);
-    }
-
-    /**
-     * Returns the amount of tags in sight
-     *
-     * @return Amount of tags detected in sight
-     */
-    public static int getTagCount() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue(NAME).tagCount;
     }
 }
