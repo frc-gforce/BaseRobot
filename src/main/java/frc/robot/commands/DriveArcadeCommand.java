@@ -3,22 +3,22 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controller.GenericCommandController;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.tankdrive.TankDrive;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.math.MathUtil.applyDeadband;
 
 
 public class DriveArcadeCommand extends Command {
-    private final Drivetrain drivetrain;
+    private final TankDrive tankDrive;
     private final GenericCommandController driver;
 
 
-    public DriveArcadeCommand(Drivetrain drivetrain, GenericCommandController driver) {
-        this.drivetrain = drivetrain;
+    public DriveArcadeCommand(TankDrive tankDrive, GenericCommandController driver) {
+        this.tankDrive = tankDrive;
         this.driver = driver;
 
-        addRequirements(this.drivetrain);
+        addRequirements(this.tankDrive);
     }
 
     /**
@@ -53,7 +53,7 @@ public class DriveArcadeCommand extends Command {
         Logger.recordOutput("ActiveCommands/DriveArcadeForwordCommand", forward);
         Logger.recordOutput("ActiveCommands/DriveArcadeRightCommand", right);
 
-        drivetrain.arcadeDrive(forward, right);
+        tankDrive.arcadeDrive(forward, right);
     }
 
     /**
@@ -87,6 +87,6 @@ public class DriveArcadeCommand extends Command {
      */
     @Override
     public void end(boolean interrupted) {
-        drivetrain.arcadeDrive(0, 0);
+        tankDrive.arcadeDrive(0, 0);
     }
 }

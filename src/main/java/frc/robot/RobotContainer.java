@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,12 +14,13 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.controller.GenericCommandController;
 import frc.robot.controller.PS4CommandController;
+import frc.robot.controller.XboxCommandController;
 import frc.robot.motors.Motors;
 import frc.robot.motors.SparkBaseMotor;
 import frc.robot.motors.SparkMaxMotor;
-import frc.robot.subsystems.GenericSubsystem;
 import frc.robot.subsystems.feed.Feed;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.swervedrive.SwerveDriveSubsystem;
+import frc.robot.subsystems.tankdrive.TankDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,9 +37,11 @@ import frc.robot.utils.*;
  */
 public class RobotContainer
 {
-    private final Drivetrain<SparkBaseMotor> drivetrain;
+    private final TankDrive<SparkBaseMotor> tankDrive;
     private final IntakeXShooter intakeXShooter;
     private final Feed feed;
+    private final SwerveDriveSubsystem swerveDrive;
+
 
     private final Joystick driver = new Joystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
     // The robot's subsystems and commands are defined here...
@@ -45,7 +49,7 @@ public class RobotContainer
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final GenericCommandController driverController =
-            new PS4CommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+            new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
 
@@ -59,6 +63,7 @@ public class RobotContainer
 
     private final Command shootCommand;
     private final Command intakeCommand;
+
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -82,7 +87,7 @@ public class RobotContainer
         //</editor-fold>
 
         //<editor-fold desc="Subsystems creation">
-        drivetrain = new Drivetrain<>(
+        tankDrive = new TankDrive<>(
                 DrivetrainConstantsFactory.createDrivetrainConstants(),
                 frontLeftMotor,
                 frontRightMotor,
@@ -97,6 +102,12 @@ public class RobotContainer
         );
         feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor);
         //</editor-fold>
+        swerveDrive = new SwerveDriveSubsystem();
+        swerveDrive.setDefaultCommand(swerveDrive.driveCommand(
+                () -> -MathUtil.applyDeadband(driverController.getLeftY(), 0.1), // קדימה/אחורה
+                () -> -MathUtil.applyDeadband(driverController.getLeftX(), 0.1), // ימינה/שמאלה
+                () -> -MathUtil.applyDeadband(driverController.getRightX(), 0.1) // סיבוב
+        ));
 
         //<editor-fold desc="Commands creation">
         GenericCommand tempCommand = new ShootCommand(intakeXShooter, feed);
@@ -111,8 +122,8 @@ public class RobotContainer
         );
         //</editor-fold>
 
-        driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(drivetrain, driverController));
-        driverChooser.addOption("Tank", new DriveTankCommand(drivetrain, driverController));
+        driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(tankDrive, driverController));
+        driverChooser.addOption("Tank", new DriveTankCommand(tankDrive, driverController));
         SmartDashboard.putData("Drive Mode", driverChooser);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
 
@@ -142,6 +153,10 @@ public class RobotContainer
         driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
         driverController.faceRight().whileTrue(shootCommand);
         driverController.faceUp().whileTrue(intakeCommand);
+
+        //sets the gyro to zero
+        //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));
+        //TODO make to gyro go to zero
     }
 
     private void switchBreak() {

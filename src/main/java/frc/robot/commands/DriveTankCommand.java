@@ -2,21 +2,21 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controller.GenericCommandController;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.tankdrive.TankDrive;
 
 import static edu.wpi.first.math.MathUtil.applyDeadband;
 
 
 public class DriveTankCommand extends Command {
-    private final Drivetrain drivetrain;
+    private final TankDrive tankDrive;
     private final GenericCommandController driver;
 
-    public DriveTankCommand(Drivetrain drivetrain, GenericCommandController driver) {
-        this.drivetrain = drivetrain;
+    public DriveTankCommand(TankDrive tankDrive, GenericCommandController driver) {
+        this.tankDrive = tankDrive;
         this.driver = driver;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.drivetrain);
+        addRequirements(this.tankDrive);
     }
 
     /**
@@ -42,7 +42,7 @@ public class DriveTankCommand extends Command {
         left = Math.copySign(Math.pow(left, 2), left);
         right = Math.copySign(Math.pow(right, 2), right);
 
-        drivetrain.tankDrive(left, right);
+        tankDrive.tankDrive(left, right);
     }
 
     /**
@@ -76,6 +76,6 @@ public class DriveTankCommand extends Command {
      */
     @Override
     public void end(boolean interrupted) {
-        drivetrain.tankDrive(0, 0);
+        tankDrive.tankDrive(0, 0);
     }
 }

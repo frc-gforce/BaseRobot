@@ -1,6 +1,5 @@
-package frc.robot.subsystems.drivetrain;
+package frc.robot.subsystems.tankdrive;
 
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -13,15 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.Objects;
-
 import static java.util.Objects.*;
 
 /**
  * Controls the drivetrain mechanisms.
  */
 @SuppressWarnings("rawtypes")
-public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
+public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
 
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
@@ -49,7 +46,7 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
      * @param backLeft The back left motor (optional)
      * @param backRight The back right motor (optional)
      */
-    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
+    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
         super(constants.logPath());
         if (nonNull(backLeft) != nonNull(backRight)) {
             throw new IllegalArgumentException("Both back motors must be specified or neither.");
@@ -75,7 +72,7 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
      * @param frontLeft The front left motor
      * @param frontRight The front right motor
      */
-    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight) {
+    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight) {
         this(constants, frontLeft, frontRight, null, null);
     }
 
