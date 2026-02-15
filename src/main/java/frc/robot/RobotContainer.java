@@ -15,6 +15,7 @@ import frc.robot.controller.GenericCommandController;
 import frc.robot.controller.PS4CommandController;
 import frc.robot.motors.Motors;
 import frc.robot.motors.SparkBaseMotor;
+import com.studica.frc.AHRS;
 import frc.robot.motors.SparkMaxMotor;
 import frc.robot.subsystems.GenericSubsystem;
 import frc.robot.subsystems.feed.Feed;
@@ -60,6 +61,8 @@ public class RobotContainer
     private final Command shootCommand;
     private final Command intakeCommand;
 
+
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
@@ -68,6 +71,9 @@ public class RobotContainer
         frontRightMotor = MotorFactory.createSparkMotor(Motors.FRONT_RIGHT);
         backLeftMotor = MotorFactory.createSparkMotor(Motors.BACK_LEFT);
         backRightMotor = MotorFactory.createSparkMotor(Motors.BACK_RIGHT);
+
+        AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+        gyro.zeroYaw();
 
         shootMotor = MotorFactory.createSparkMotor(Motors.SHOOT);
         feedMotor = MotorFactory.createSparkMotor(Motors.FEED);
