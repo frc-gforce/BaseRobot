@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -8,6 +7,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.motors.BaseMotor;
+import frc.robot.odometry.GenericOdometry;
 import frc.robot.subsystems.GenericSubsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +21,7 @@ import static java.util.Objects.*;
  * Controls the drivetrain mechanisms.
  */
 @SuppressWarnings("rawtypes")
-public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
+public class Drivetrain<T extends BaseMotor> extends GenericSubsystem implements GenericOdometry<DifferentialDriveOdometry> {
 
     private final BaseMotor leftMotor;
     private final BaseMotor rightMotor;
@@ -39,7 +39,6 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
     private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
     DifferentialDriveOdometry odometry;
-    private Rotation2d gyroAngle = headingRotation;
 
     /**
      * Controls the drivetrain mechanisms.
@@ -102,8 +101,7 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         updatePose();
-        gyroAngle = headingRotation;
-        robotPose = odometry.update(gyroAngle, leftMotor.getSpeed(), rightMotor.getSpeed());
+        robotPose = odometry.update(headingRotation, leftMotor.getSpeed(), rightMotor.getSpeed());
     }
 
     /**
@@ -157,5 +155,25 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
     @SuppressWarnings("unchecked")
     private void follow(T master, @NotNull T slave) {
         slave.follow(master, false);
+    }
+
+    @Override
+    public void resetPose(Pose2d pose2d) {
+        odometry.resetPose(pose2d);
+    }
+
+    @Override
+    public void resetRotation(Rotation2d rotation2d) {
+        odometry.resetRotation(rotation2d);
+    }
+
+    @Override
+    public Pose2d getPoseMeters() {
+        return odometry.getPoseMeters();
+    }
+
+    @Override
+    public DifferentialDriveOdometry getOdometry() {
+        return odometry;
     }
 }
