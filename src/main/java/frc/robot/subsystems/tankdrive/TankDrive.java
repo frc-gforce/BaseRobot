@@ -1,7 +1,8 @@
-package frc.robot.subsystems.drivetrain;
+package frc.robot.subsystems.tankdrive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.Objects;
-
 import static java.util.Objects.*;
 
 /**
@@ -20,7 +19,7 @@ import static java.util.Objects.*;
  * @param <T> Motor type
  */
 @SuppressWarnings("rawtypes")
-public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
+public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
 
     private final T leftMotor;
     private final T rightMotor;
@@ -37,6 +36,9 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
     private double yMeters = 0.0;
     private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
+    DifferentialDriveOdometry odometry;
+    private Rotation2d gyroAngle = headingRotation;
+
     /**
      * Controls the drivetrain mechanisms.
      * @param constants The constants for the drivetrain
@@ -45,7 +47,7 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
      * @param backLeft The back left motor (optional)
      * @param backRight The back right motor (optional)
      */
-    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
+    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
         super(constants.logPath());
         if (nonNull(backLeft) != nonNull(backRight)) {
             throw new IllegalArgumentException("Both back motors must be specified or neither.");
@@ -58,6 +60,9 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
         }
         drive = new DifferentialDrive(leftMotor::setSpeed, rightMotor::setSpeed);
         SmartDashboard.putData("Field", field);
+
+        odometry = new DifferentialDriveOdometry(headingRotation, leftMotor.getSpeed(), rightMotor.getSpeed());
+
     }
 
     /**
@@ -68,7 +73,7 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
      * @param frontLeft The front left motor
      * @param frontRight The front right motor
      */
-    public Drivetrain(DrivetrainConstants constants, T frontLeft, T frontRight) {
+    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight) {
         this(constants, frontLeft, frontRight, null, null);
     }
 
@@ -95,6 +100,8 @@ public class Drivetrain<T extends BaseMotor> extends GenericSubsystem {
         Logger.recordOutput("Motors/Output/LeftFrontSpeed", leftMotor.getSpeed());
         Logger.recordOutput("Motors/Output/RightFrontSpeed", rightMotor.getSpeed());
         updatePose();
+        gyroAngle = headingRotation;
+        robotPose = odometry.update(gyroAngle, leftMotor.getSpeed(), rightMotor.getSpeed());
     }
 
     /**
