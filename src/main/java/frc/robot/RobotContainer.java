@@ -153,6 +153,7 @@ public class RobotContainer
         driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
         driverController.faceRight().whileTrue(shootCommand);
         driverController.faceUp().whileTrue(intakeCommand);
+        driverController.faceDown().whileTrue(swerveDrive.driveForward());
 
         //sets the gyro to zero
         //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));
@@ -179,6 +180,7 @@ public class RobotContainer
     }
 
     public Command getDriveCommand() {
-        return driverChooser.getSelected();
+        return swerveDrive.getDefaultCommand();
+//        return driverChooser.getSelected();
     }
 }

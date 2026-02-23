@@ -1,27 +1,27 @@
 {
   "location": {
-    "front": -0.3,
-    "left": -0.3
+    "front": -9.75,
+    "left": -9.75
   },
-  "absoluteEncoderOffset": 0,
+  "absoluteEncoderOffset": 98.2616,
   "drive": {
     "type": "krakenx60",
     "id": 0,
-    "canbus": null
+    "canbus": "rio"
   },
   "angle": {
     "type": "krakenx44",
-    "id": 0,
-    "canbus": null
+    "id": 2,
+    "canbus": "rio"
   },
   "encoder": {
-    "type": "none",
-    "id": 0,
-    "canbus": null
+    "type": "cancoder",
+    "id": 4,
+    "canbus": "rio"
   },
   "inverted": {
-    "drive": false,
-    "angle": false
+    "drive": true,
+    "angle": true
   },
   "absoluteEncoderInverted": false
 }

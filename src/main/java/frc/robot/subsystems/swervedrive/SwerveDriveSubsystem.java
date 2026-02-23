@@ -17,7 +17,7 @@ import frc.robot.subsystems.GenericSubsystem;
 
 public class SwerveDriveSubsystem extends GenericSubsystem {
 
-    double maximumSpeed = Units.feetToMeters(4.5);
+    double maximumSpeed = 0.5;//Units.feetToMeters(4.5);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     SwerveDrive swerveDrive;
 
@@ -31,6 +31,13 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
         }
         SwerveDriveTelemetry.verbosity = SwerveDriveTelemetry.TelemetryVerbosity.HIGH;
 
+    }
+
+    public Command driveForward()
+    {
+        return run(() -> {
+            swerveDrive.drive(new Translation2d(1, 0), 0, false, false);
+        });
     }
 
     /**
@@ -74,7 +81,7 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
             swerveDrive.drive(new Translation2d(translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
                             translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()),
                     angularRotationX.getAsDouble() * swerveDrive.getMaximumChassisAngularVelocity(),
-                    true,
+                    false,
                     false);
         }),
                 "DriveCommand");
