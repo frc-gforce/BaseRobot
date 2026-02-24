@@ -1,13 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.controller.GenericCommandController;
 import frc.robot.subsystems.tankdrive.TankDrive;
 
 import static edu.wpi.first.math.MathUtil.applyDeadband;
 
 
-public class DriveTankCommand extends Command {
+public class DriveTankCommand extends GenericCommand {
     private final TankDrive tankDrive;
     private final GenericCommandController driver;
 

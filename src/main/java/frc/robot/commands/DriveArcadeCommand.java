@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controller.GenericCommandController;
 import frc.robot.subsystems.tankdrive.TankDrive;
 import org.littletonrobotics.junction.Logger;
@@ -9,7 +8,7 @@ import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.math.MathUtil.applyDeadband;
 
 
-public class DriveArcadeCommand extends Command {
+public class DriveArcadeCommand extends GenericCommand {
     private final TankDrive tankDrive;
     private final GenericCommandController driver;
 
