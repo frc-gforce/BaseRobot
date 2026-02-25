@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveParser;
@@ -17,7 +22,7 @@ import frc.robot.subsystems.GenericSubsystem;
 
 public class SwerveDriveSubsystem extends GenericSubsystem {
 
-    double maximumSpeed = 0.5;//Units.feetToMeters(4.5);
+    double maximumSpeed = 0.25;//Units.feetToMeters(4.5);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     SwerveDrive swerveDrive;
 
@@ -30,7 +35,32 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
             e.printStackTrace();
         }
         SwerveDriveTelemetry.verbosity = SwerveDriveTelemetry.TelemetryVerbosity.HIGH;
+        RobotConfig config = null;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        AutoBuilder.configure(
+                swerveDrive::getPose,
+                swerveDrive::resetOdometry,
+                swerveDrive::getRobotVelocity,
+                (speeds, feedForward) -> swerveDrive.drive(speeds),
+                new PPHolonomicDriveController(
+                        new PIDConstants(5.0, 0.0, 0.0),
+                        new PIDConstants(5.0, 0.0, 0.0)
+                ),
+                config,
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this
+        );
     }
 
     public Command driveForward()

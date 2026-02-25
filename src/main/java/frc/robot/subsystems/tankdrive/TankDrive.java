@@ -1,16 +1,28 @@
 package frc.robot.subsystems.tankdrive;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.motors.BaseMotor;
 import frc.robot.subsystems.GenericSubsystem;
+import frc.robot.utils.LimelightUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.*;
 
@@ -25,6 +37,7 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
     private final T rightMotor;
 
     private final DifferentialDrive drive;
+    private final DifferentialDriveKinematics kinematics;
 
     private final Field2d field = new Field2d();
 
@@ -36,18 +49,20 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
     private double yMeters = 0.0;
     private Rotation2d headingRotation = Rotation2d.fromRadians(0.0);
 
+    AHRS navx;
     DifferentialDriveOdometry odometry;
     private Rotation2d gyroAngle = headingRotation;
 
     /**
      * Controls the drivetrain mechanisms.
      * @param constants The constants for the drivetrain
+     * @param pathplannerConfig The pathplanner config
      * @param frontLeft The front left motor
      * @param frontRight The front right motor
      * @param backLeft The back left motor (optional)
      * @param backRight The back right motor (optional)
      */
-    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
+    public TankDrive(TankDriveConstants constants, RobotConfig pathplannerConfig, T frontLeft, T frontRight, @Nullable T backLeft, @Nullable T backRight) {
         super(constants.logPath());
         if (nonNull(backLeft) != nonNull(backRight)) {
             throw new IllegalArgumentException("Both back motors must be specified or neither.");
@@ -63,6 +78,36 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
 
         odometry = new DifferentialDriveOdometry(headingRotation, leftMotor.getSpeed(), rightMotor.getSpeed());
 
+        navx = new AHRS(AHRS.NavXComType.kMXP_SPI);
+
+        kinematics = new DifferentialDriveKinematics(constants.trackWidthMeters());
+
+//        AutoBuilder.configure(
+////                LimelightUtils::getPose2d,
+//                this::getRobotPose,
+//                (Pose2d pose) -> {
+//                    odometry.resetPosition(
+//                            Rotation2d.fromDegrees(navx.getAngle()),
+//                            leftMotor.getSpeed(),
+//                            rightMotor.getSpeed(),
+//                            pose
+//                    );
+//                    this.robotPose = pose;
+//                },
+//                this::getChassisSpeeds,
+//                this::driveRobotRelative,
+//                new PPLTVController(0.02),
+//                pathplannerConfig,
+//                () -> {
+//                    var alliance = DriverStation.getAlliance();
+//                    if (alliance.isPresent()) {
+//                        return alliance.get() == DriverStation.Alliance.Red;
+//                    }
+//                    return false;
+//                },
+//                this
+//        );
+
     }
 
     /**
@@ -70,11 +115,12 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
      * <br>
      * Back motors are set to null.
      * @param constants The constants for the drivetrain
+     * @param pathplannerConfig The pathplanner config
      * @param frontLeft The front left motor
      * @param frontRight The front right motor
      */
-    public TankDrive(TankDriveConstants constants, T frontLeft, T frontRight) {
-        this(constants, frontLeft, frontRight, null, null);
+    public TankDrive(TankDriveConstants constants, RobotConfig pathplannerConfig, T frontLeft, T frontRight) {
+        this(constants, pathplannerConfig, frontLeft, frontRight, null, null);
     }
 
     /**
@@ -83,7 +129,7 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
      * @param right The right side speed
      */
     public void tankDrive(double left, double right) {
-        drive.tankDrive(left, right);
+        drive.tankDrive(left, right, false);
     }
 
     /**
@@ -93,6 +139,23 @@ public class TankDrive<T extends BaseMotor> extends GenericSubsystem {
      */
     public void arcadeDrive(double forward, double right) {
         drive.arcadeDrive(forward, right);
+    }
+
+    public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+        Logger.recordOutput("Motors/Input/ChassisSpeeds", chassisSpeeds);
+
+        DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds);
+
+        wheelSpeeds.desaturate(5);
+
+        Logger.recordOutput("Motors/Input/LeftFrontSpeed", wheelSpeeds.leftMetersPerSecond);
+        Logger.recordOutput("Motors/Input/RightFrontSpeed", wheelSpeeds.rightMetersPerSecond);
+        tankDrive(wheelSpeeds.leftMetersPerSecond / 5, wheelSpeeds.rightMetersPerSecond / 5);
+    }
+
+    private ChassisSpeeds getChassisSpeeds() {
+        return kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(leftMotor.getSpeed(), rightMotor.getSpeed()));
+//        return new ChassisSpeeds(leftMotor.getSpeed(), rightMotor.getSpeed(), navx.getAngle());
     }
 
     @Override
