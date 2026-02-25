@@ -5,11 +5,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.controller.GenericCommandController;
@@ -23,10 +26,12 @@ import frc.robot.subsystems.swervedrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.tankdrive.TankDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.intakexshooter.IntakeXShooter;
 import frc.robot.utils.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
 
 /**
@@ -52,6 +57,7 @@ public class RobotContainer
             new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
+    private SendableChooser<PathPlannerAuto> pathChooser = new SendableChooser<>();
 
     private final SparkMaxMotor frontLeftMotor;
     private final SparkMaxMotor frontRightMotor;
@@ -63,6 +69,9 @@ public class RobotContainer
 
     private final Command shootCommand;
     private final Command intakeCommand;
+
+    private List<PathPlannerAuto> pathPlannerAutos = new ArrayList<>();
+
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -87,8 +96,15 @@ public class RobotContainer
         //</editor-fold>
 
         //<editor-fold desc="Subsystems creation">
+        RobotConfig config = null;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         tankDrive = new TankDrive<>(
                 DrivetrainConstantsFactory.createDrivetrainConstants(),
+                config,
                 frontLeftMotor,
                 frontRightMotor,
                 backLeftMotor,
@@ -102,6 +118,7 @@ public class RobotContainer
         );
         feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor);
         //</editor-fold>
+
         swerveDrive = new SwerveDriveSubsystem();
         swerveDrive.setDefaultCommand(swerveDrive.driveCommand(
                 () -> -MathUtil.applyDeadband(driverController.getLeftY(), 0.1), // קדימה/אחורה
@@ -127,18 +144,30 @@ public class RobotContainer
         SmartDashboard.putData("Drive Mode", driverChooser);
 //        drivetrain.setDefaultCommand(driverChooser.getSelected());
 
+        loadAutos();
         // Configure the trigger bindings
         configureBindings();
+    }
+
+    private void loadAutos() {
+        for (PathPlannerAutos auto : PathPlannerAutos.values()) {
+            pathPlannerAutos.add(new PathPlannerAuto(auto.getName()));
+        }
+        pathChooser.setDefaultOption("None", null);
+        for (PathPlannerAuto auto : pathPlannerAutos) {
+            pathChooser.addOption(auto.getName(), auto);
+        }
+        SmartDashboard.putData("Path Planner Auto", pathChooser);
     }
 
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+     * {@link Trigger#Trigger(BooleanSupplier)} constructor with an arbitrary
      * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * CommandGenericHID}'s subclasses for {@link
+     * CommandXboxController Xbox}/{@link CommandPS4Controller
+     * PS4} controllers or {@link CommandJoystick Flight
      * joysticks}.
      */
     private void configureBindings()
@@ -153,7 +182,7 @@ public class RobotContainer
         driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
         driverController.faceRight().whileTrue(shootCommand);
         driverController.faceUp().whileTrue(intakeCommand);
-        driverController.faceDown().whileTrue(swerveDrive.driveForward());
+//        driverController.faceDown().whileTrue(swerveDrive.driveForward());
 
         //sets the gyro to zero
         //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));
@@ -176,11 +205,12 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         // An example command will be run in autonomous
-        return Autos.exampleAuto(exampleSubsystem);
+//        return Autos.exampleAuto(exampleSubsystem);
+        return pathChooser.getSelected();
     }
 
     public Command getDriveCommand() {
-        return swerveDrive.getDefaultCommand();
-//        return driverChooser.getSelected();
+//        return swerveDrive.getDefaultCommand();
+        return driverChooser.getSelected();
     }
 }

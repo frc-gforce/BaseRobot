@@ -7,14 +7,17 @@ package frc.robot.subsystems.tankdrive;
  */
 public record TankDriveConstants(
         String logPath,
-        String poseLogPath
+        String poseLogPath,
+        double trackWidthMeters
 ) {
     public TankDriveConstants(
-            String logPath
+            String logPath,
+            double trackWidthMeters
     ) {
         this(
                 logPath,
-                logPath + "/Pose"
+                logPath + "/Pose",
+                trackWidthMeters
         );
     }
 }

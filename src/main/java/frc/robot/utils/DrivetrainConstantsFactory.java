@@ -8,6 +8,6 @@ public class DrivetrainConstantsFactory {
      * @return The default constants
      */
     public static TankDriveConstants createDrivetrainConstants() {
-        return new TankDriveConstants("Robot/Drivetrain");
+        return new TankDriveConstants("Robot/Drivetrain", 0.6);
     }
 }
