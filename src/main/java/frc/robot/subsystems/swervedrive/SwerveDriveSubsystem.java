@@ -8,7 +8,15 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.studica.frc.AHRS;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.utils.LimelightUtils;
+import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveParser;
@@ -61,6 +69,8 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
                 },
                 this
         );
+
+
     }
 
     public Command driveForward()
@@ -121,6 +131,17 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
     {
         swerveDrive.driveFieldOriented(velocity);
     }
+
+    @Override
+    public void subsystemPeriodic() {
+        if (LimelightUtils.hasTarget()) {
+            swerveDrive.addVisionMeasurement(
+                    LimelightUtils.getPose2d(),
+                    Timer.getFPGATimestamp()
+            );
+        }
+    }
+
 
 
 
