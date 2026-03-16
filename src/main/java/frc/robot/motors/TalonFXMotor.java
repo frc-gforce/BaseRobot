@@ -15,6 +15,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import org.littletonrobotics.junction.Logger;
 
 public class TalonFXMotor implements TalonBaseMotor {
     private final TalonFX motor;
@@ -91,6 +92,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
+        Logger.recordOutput("setVelocity", velocity.in(Units.RotationsPerSecond));
+        Logger.recordOutput("setVelocityRPM", velocity.in(Units.RPM));
         motor.setControl(velocityVoltage.withVelocity(velocity));
     }
 
@@ -101,6 +104,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void stop() {
+        Logger.recordOutput("setVelocity", 0);
+        Logger.recordOutput("setVelocityRPM", 0);
         motor.stopMotor();
     }
 

@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.MathUtil;
@@ -18,9 +19,7 @@ import frc.robot.commands.*;
 import frc.robot.controller.GenericCommandController;
 import frc.robot.controller.PS4CommandController;
 import frc.robot.controller.XboxCommandController;
-import frc.robot.motors.Motors;
-import frc.robot.motors.SparkBaseMotor;
-import frc.robot.motors.SparkMaxMotor;
+import frc.robot.motors.*;
 import frc.robot.subsystems.feed.Feed;
 import frc.robot.subsystems.swervedrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.tankdrive.TankDrive;
@@ -40,8 +39,7 @@ import java.util.function.BooleanSupplier;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
+public class RobotContainer {
     private final TankDrive<SparkBaseMotor> tankDrive;
     private final IntakeXShooter intakeXShooter;
     private final Feed feed;
@@ -64,7 +62,7 @@ public class RobotContainer
     private final SparkMaxMotor backLeftMotor;
     private final SparkMaxMotor backRightMotor;
 
-    private final SparkMaxMotor shootMotor;
+    private final TalonFXMotor shootMotor;
     private final SparkMaxMotor feedMotor;
 
     private final Command shootCommand;
@@ -73,17 +71,26 @@ public class RobotContainer
     private List<PathPlannerAuto> pathPlannerAutos = new ArrayList<>();
 
 
-
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer()
-    {
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
         //<editor-fold desc="Motors creation">
         frontLeftMotor = MotorFactory.createSparkMotor(Motors.FRONT_LEFT);
         frontRightMotor = MotorFactory.createSparkMotor(Motors.FRONT_RIGHT);
         backLeftMotor = MotorFactory.createSparkMotor(Motors.BACK_LEFT);
         backRightMotor = MotorFactory.createSparkMotor(Motors.BACK_RIGHT);
 
-        shootMotor = MotorFactory.createSparkMotor(Motors.SHOOT);
+        shootMotor = MotorFactory.createTalonFXMotor(Motors.SHOOT);
+        shootMotor.setPID(new PID(
+                0.25,
+                0,
+                0,
+                0.18,
+                0.12,
+                0,
+                0
+        ));
         feedMotor = MotorFactory.createSparkMotor(Motors.FEED);
         //</editor-fold>
 
@@ -170,8 +177,7 @@ public class RobotContainer
      * PS4} controllers or {@link CommandJoystick Flight
      * joysticks}.
      */
-    private void configureBindings()
-    {
+    private void configureBindings() {
         // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
         new Trigger(exampleSubsystem::exampleCondition)
                 .onTrue(new ExampleCommand(exampleSubsystem));
@@ -202,8 +208,7 @@ public class RobotContainer
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand()
-    {
+    public Command getAutonomousCommand() {
         // An example command will be run in autonomous
 //        return Autos.exampleAuto(exampleSubsystem);
         return pathChooser.getSelected();
