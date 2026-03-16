@@ -10,7 +10,7 @@ public enum Motors {
     FRONT_RIGHT(17, "Front Right Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
     BACK_RIGHT(16, "Back Right Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
     BACK_LEFT(19, "Back Left Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, true),
-    SHOOT(24, "Shoot Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
+    SHOOT(10, "Shoot Motor", MotorType.kBrushless, MotorBrand.TALON_FX, true),
     FEED(23, "Feed Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false);
 
     public final int id;
