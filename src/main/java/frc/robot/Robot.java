@@ -87,6 +87,7 @@ public class Robot extends LoggedRobot
     @Override
     public void autonomousInit()
     {
+//        robotContainer.resetOdometry();
         autonomousCommand = robotContainer.getAutonomousCommand();
         
         // schedule the autonomous command (example)

@@ -84,8 +84,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void follow(BaseMotor<TalonFX, TalonFXConfiguration> motor, boolean invert) {
-        motor.getMotor().setControl(new Follower(
-                this.getMotor().getDeviceID(),
+        this.getMotor().setControl(new Follower(
+                motor.getMotor().getDeviceID(),
                 invert ? MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned
         ));
     }
