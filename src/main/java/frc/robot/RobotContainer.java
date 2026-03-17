@@ -65,6 +65,7 @@ public class RobotContainer
 
     private final SparkMaxMotor shootMotor;
     private final SparkMaxMotor feedMotor;
+    private final SparkMaxMotor conveyorMotor;
 
     private final Command shootCommand;
     private final Command intakeCommand;
@@ -84,6 +85,7 @@ public class RobotContainer
         test = new Test();
         shootMotor = MotorFactory.createSparkMotor(Motors.SHOOT);
         feedMotor = MotorFactory.createSparkMotor(Motors.FEED);
+        conveyorMotor = MotorFactory.createSparkMotor(Motors.CONVEYOR);
         //</editor-fold>
 
         //<editor-fold desc="Default motors configs">
@@ -115,7 +117,7 @@ public class RobotContainer
                 0.5,
                 0.05
         );
-        feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor);
+        feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor, conveyorMotor);
         //</editor-fold>
 
         swerveDrive = new SwerveDriveSubsystem();

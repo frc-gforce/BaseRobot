@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class Feed<T extends BaseMotor> extends GenericSubsystem {
 
     private final T motor;
+    private final T conveyorMotor;
     private final FeedConstants constants;
     private Boolean motorActive = false;
 
@@ -20,10 +21,11 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
      * @param constants The constants for the feed subsystem
      * @param motor The motor used in the feed subsystem
      */
-    public Feed(FeedConstants constants, T motor) {
+    public Feed(FeedConstants constants, T motor, T conveyorMotor) {
         super(constants.logPath());
         this.motor = motor;
         this.constants = constants;
+        this.conveyorMotor = conveyorMotor;
     }
 
     @Override
@@ -35,8 +37,12 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
      * Returns the motor of the feed's subsystem
      * @return The motor
      */
-    public T getMotor() {
+    public T getFeedMotor() {
         return motor;
+    }
+
+    public T getConveyorMotor() {
+        return conveyorMotor;
     }
 
     /**
@@ -45,14 +51,24 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
     public void stop() {
         motorActive = false;
         motor.setSpeed(0);
+        conveyorMotor.setSpeed(0);
     }
 
     /**
-     * Sets the speed of the motor for the feed subsystem
-     * @param speed the intended speed of the motor
+     * Sets the conveyor motor and the feed motor to intake position
      */
-    public void setSpeed(int speed) {
-        motor.setSpeed(speed);
+    public void intake() {
+        motor.setSpeed(0.2);
+        conveyorMotor.setSpeed(0);
+        motorActive = true;
+    }
+
+    /**
+     * Sets the conveyor motor and the feed motor to shoot position
+     */
+    public void shoot(){
+        motor.setSpeed(-0.2);
+        conveyorMotor.setSpeed(1);
         motorActive = true;
     }
 
