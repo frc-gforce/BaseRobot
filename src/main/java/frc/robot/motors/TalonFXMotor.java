@@ -92,8 +92,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        Logger.recordOutput("setVelocity", velocity.in(Units.RotationsPerSecond));
-        Logger.recordOutput("setVelocityRPM", velocity.in(Units.RPM));
+//        Logger.recordOutput("setVelocity", velocity.in(Units.RotationsPerSecond));
+//        Logger.recordOutput("setVelocityRPM", velocity.in(Units.RPM));
         motor.setControl(velocityVoltage.withVelocity(velocity));
     }
 
@@ -104,8 +104,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void stop() {
-        Logger.recordOutput("setVelocity", 0);
-        Logger.recordOutput("setVelocityRPM", 0);
+//        Logger.recordOutput("setVelocity", 0);
+//        Logger.recordOutput("setVelocityRPM", 0);
         motor.stopMotor();
     }
 
