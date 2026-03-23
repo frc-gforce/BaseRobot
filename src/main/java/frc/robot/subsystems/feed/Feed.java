@@ -31,6 +31,7 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
     @Override
     protected void subsystemPeriodic() {
         Logger.recordOutput(constants.speedLogPath(), motor.getSpeed());
+        Logger.recordOutput(constants.speedLogPath() + "Conveyor", conveyorMotor.getSpeed());
     }
 
     /**
@@ -68,7 +69,7 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
      */
     public void shoot(){
         motor.setSpeed(-0.2);
-        conveyorMotor.setSpeed(1);
+        conveyorMotor.setSpeed(0.4);
         motorActive = true;
     }
 

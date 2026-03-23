@@ -124,7 +124,7 @@ public class RobotContainer
         SwerveInputStream driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
                 () -> driverController.getLeftY() * -1,
                 () -> driverController.getLeftX() * -1)
-                .withControllerRotationAxis(() -> driverController.getRightX() * -1)
+                .withControllerRotationAxis(() -> driverController.getRightY() * -1)
                 .deadband(0.1)
                 .scaleTranslation(0.8)
                 .allianceRelativeControl(true);

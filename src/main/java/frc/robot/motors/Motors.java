@@ -12,7 +12,7 @@ public enum Motors {
     BACK_LEFT(19, "Back Left Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, true),
     SHOOT(24, "Shoot Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
     FEED(23, "Feed Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
-    CONVEYOR(1, "Conveyor Motor", MotorType.kBrushless, MotorBrand.SPARK_MAX, true),;
+    CONVEYOR(1, "Conveyor Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false);
 
     public final int id;
     public final String name;
