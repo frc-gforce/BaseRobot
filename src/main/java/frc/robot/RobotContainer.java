@@ -63,6 +63,7 @@ public class RobotContainer
 
     private final TalonFXMotor shootMotor;
     private final SparkMaxMotor feedMotor;
+    private final SparkMaxMotor conveyorMotor;
 
     private final TalonFXMotor rightIntakeMotor;
     private final TalonFXMotor leftIntakeMotor;
@@ -95,6 +96,7 @@ public class RobotContainer
                 0
         ));
         feedMotor = MotorFactory.createSparkMotor(Motors.FEED);
+        conveyorMotor = MotorFactory.createSparkMotor(Motors.CONVEYOR);
 
 
         rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE);
@@ -134,7 +136,7 @@ public class RobotContainer
                 0.5,
                 0.05
         );
-        feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor);
+        feed = new Feed(FeedConstantsFactory.createConstants(), feedMotor, conveyorMotor);
 
         backIntake = new BackIntake(
                 BackIntakeConstantsFactory.createConstants(),
@@ -148,7 +150,7 @@ public class RobotContainer
         SwerveInputStream driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
                 () -> driverController.getLeftY() * -1,
                 () -> driverController.getLeftX() * -1)
-                .withControllerRotationAxis(() -> driverController.getRightY() * -1)
+                .withControllerRotationAxis(() -> driverController.getRightX() * -1)
                 .deadband(0.1)
                 .scaleTranslation(0.8)
                 .allianceRelativeControl(true);

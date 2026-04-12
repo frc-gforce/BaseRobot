@@ -49,13 +49,13 @@ public class ShootCommand extends GenericCommand {
         double speed = speedLookupTable.getSpeed(robotPose.get(), hubPose.get());
         Logger.recordOutput("IntakeXShooterSpeed", speed);
         intakeXShooter.setMotorSpeed(speed);
-        feed.setSpeed(-1);
+        feed.shoot();
     }
 
     @Override
     public void end(boolean interrupted) {
         intakeXShooter.setMotorSpeed(0);
-        feed.setSpeed(0);
+        feed.stop();
         Logger.recordOutput("IntakeXShooterSpeed", 0.0);
     }
 }

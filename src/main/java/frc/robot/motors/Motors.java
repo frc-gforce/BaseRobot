@@ -14,7 +14,8 @@ public enum Motors {
     FEED(23, "Feed Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false),
     BACK_RIGHT_INTAKE(9, "Back Right Intake Motor", MotorType.kBrushless, MotorBrand.TALON_FX, false),
     BACK_LEFT_INTAKE(11, "Back Left Intake Motor", MotorType.kBrushless, MotorBrand.TALON_FX, false),
-    OPEN_INTAKE(24, "Open Intake Motor", MotorType.kBrushless, MotorBrand.SPARK_MAX, false);
+    OPEN_INTAKE(24, "Open Intake Motor", MotorType.kBrushless, MotorBrand.SPARK_MAX, false),
+    CONVEYOR(1, "Conveyor Motor", MotorType.kBrushed, MotorBrand.SPARK_MAX, false);
 
     public final int id;
     public final String name;
