@@ -9,23 +9,33 @@ public class BackIntake extends GenericSubsystem {
 
     private final BaseMotor leftIntakeMotor;
     private final BaseMotor rightIntakeMotor;
-    private final BaseMotor openIntakeMotor;
+    private final BaseMotor openIntakeMotorLeft;
+    private final BaseMotor openIntakeMotorRight;
 
-    public BackIntake(BackIntakeConstants constants, BaseMotor leftIntakeMotor, BaseMotor rightIntakeMotor, BaseMotor openIntakeMotor) {
+    public BackIntake(BackIntakeConstants constants, BaseMotor leftIntakeMotor, BaseMotor rightIntakeMotor, BaseMotor openIntakeMotorLeft, BaseMotor openIntakeMotorRight) {
         super(constants.logPath());
         this.leftIntakeMotor = leftIntakeMotor;
         this.rightIntakeMotor = rightIntakeMotor;
-        this.openIntakeMotor = openIntakeMotor;
+        this.openIntakeMotorLeft = openIntakeMotorLeft;
+        this.openIntakeMotorRight = openIntakeMotorRight;
 
         leftIntakeMotor.follow(rightIntakeMotor, true);
+        openIntakeMotorLeft.follow(openIntakeMotorRight, true);
     }
 
     public void openIntake() {
-        openIntakeMotor.setSpeed(0.5);
+        openIntakeMotorRight.setSpeed(0.2);
     }
 
     public void stopOpenIntake() {
-        openIntakeMotor.setSpeed(0);
+        openIntakeMotorRight.setSpeed(0);
+    }
+
+    public void closeIntake() {
+        openIntakeMotorRight.setSpeed(-0.2);
+    }
+    public void stopCloseIntake() {
+        openIntakeMotorRight.setSpeed(0);
     }
 
     public void intake() {
@@ -38,6 +48,6 @@ public class BackIntake extends GenericSubsystem {
 
     @Override
     protected void subsystemPeriodic() {
-        Logger.recordOutput("OpenIntakeMotor", openIntakeMotor.getSpeed());
+        Logger.recordOutput("OpenIntakeMotor", openIntakeMotorRight.getSpeed());
     }
 }

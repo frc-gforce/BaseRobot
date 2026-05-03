@@ -67,12 +67,14 @@ public class RobotContainer
 
     private final TalonFXMotor rightIntakeMotor;
     private final TalonFXMotor leftIntakeMotor;
-    private final SparkMaxMotor openIntakeMotor;
+    private final SparkMaxMotor openIntakeMotorLeft;
+    private final SparkMaxMotor openIntakeMotorRight;
 
     private final Command shootCommand;
     private final Command intakeCommand;
     private final Command backIntakeCommand;
     private final Command openIntakeCommand;
+    private final Command closeIntakeCommand;
     private final Command aimCommand;
 
     /**
@@ -101,7 +103,8 @@ public class RobotContainer
 
         rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE);
         leftIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_LEFT_INTAKE);
-        openIntakeMotor = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE);
+        openIntakeMotorLeft = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_LEFT);
+        openIntakeMotorRight = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_RIGHT);
 
         //</editor-fold>
 
@@ -142,7 +145,8 @@ public class RobotContainer
                 BackIntakeConstantsFactory.createConstants(),
                 leftIntakeMotor,
                 rightIntakeMotor,
-                openIntakeMotor
+                openIntakeMotorLeft,
+                openIntakeMotorRight
         );
         //</editor-fold>
 
@@ -182,6 +186,11 @@ public class RobotContainer
         openIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
                 tempCommand,
                 "Open Intake Command"
+        );
+        tempCommand = new CloseIntakeCommand(backIntake);
+        closeIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                tempCommand,
+                "Close Intake Command"
         );
         tempCommand = new AimAtHubCommand(swerveDrive);
         aimCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
@@ -234,7 +243,7 @@ public class RobotContainer
 //        driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
         driverController.faceLeft().whileTrue(backIntakeCommand);
         driverController.faceRight().whileTrue(new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand));
-        driverController.faceUp().whileTrue(intakeCommand);
+        driverController.faceUp().whileTrue(closeIntakeCommand);
         driverController.faceDown().whileTrue(openIntakeCommand);
 
         //sets the gyro to zero
