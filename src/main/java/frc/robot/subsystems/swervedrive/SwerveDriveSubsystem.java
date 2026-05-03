@@ -75,7 +75,7 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
             e.printStackTrace();
         }
         swerveDrive.resetOdometry(LimelightUtils.getPose2d());
-        swerveDrive.resetOdometry(startPose);
+//        swerveDrive.resetOdometry(startPose);
     }
 
     public Pose2d getPose() {
@@ -171,7 +171,7 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
         Translation2d hubPose = FieldUtils.getHubPose();
         Logger.recordOutput(getLogPath() + "/Pose", swerveDrive.getPose());
         Logger.recordOutput(getLogPath() + "/Pose/HubDistance", getPose().getTranslation().getDistance(hubPose));
-        Logger.recordOutput(getLogPath() + "/Pose/HubAimed", Math.abs(hubPose.minus(getPose().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(180)).getRadians()) - Math.abs(getPose().getRotation().getRadians()) <= Math.toRadians(2) );
+        Logger.recordOutput(getLogPath() + "/Pose/HubAimed", Math.abs(hubPose.minus(getPose().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(190)).getRadians()) - Math.abs(getPose().getRotation().getRadians()) >= Math.toRadians(2) );
         Logger.recordOutput(getLogPath() + "/Vision", LimelightUtils.getPose2d());
         Logger.recordOutput(getLogPath() + "/Vision/TagCount", LimelightUtils.getTagCount());
     }

@@ -23,7 +23,7 @@ public class AimAtHubCommand extends GenericCommand {
 
     private Rotation2d getTargetAngle(Translation2d targetPose, Translation2d robotPose) {
         Translation2d toHub = targetPose.minus(robotPose);
-        return toHub.getAngle().plus(Rotation2d.fromDegrees(180));
+        return toHub.getAngle().plus(Rotation2d.fromDegrees(190));
     }
 
     private ChassisSpeeds getChassisSpeeds(Translation2d targetPose, Pose2d robotPose) {

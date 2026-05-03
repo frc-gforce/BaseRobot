@@ -25,6 +25,9 @@ public class ShootCommand extends GenericCommand {
     //pose: x: 2.326 y: 4.408, heading: 180
     private final double MIDDLE_HUB_SHOOT = 3700;
 
+    //dist: 1.91 speed: 3650
+    //dist: 2.680 speed 4000
+
     private final Supplier<Translation2d> robotPose;
     private final Supplier<Translation2d> hubPose;
 
@@ -49,7 +52,20 @@ public class ShootCommand extends GenericCommand {
         double speed = speedLookupTable.getSpeed(robotPose.get(), hubPose.get());
         Logger.recordOutput("IntakeXShooterSpeed", speed);
         intakeXShooter.setMotorSpeed(speed);
-        feed.shoot();
+//        feed.shoot();
+    }
+
+    @Override
+    public void execute() {
+        double speed = speedLookupTable.getSpeed(robotPose.get(), hubPose.get());
+        Logger.recordOutput("IntakeXShooterSpeed", speed);
+        intakeXShooter.setMotorSpeed(speed);
+        if (Math.abs(speed - intakeXShooter.getCurrentSpeed()) < 10) {
+            feed.shoot();
+        }
+        else {
+            feed.stop();
+        }
     }
 
     @Override

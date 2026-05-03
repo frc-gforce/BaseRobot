@@ -10,9 +10,11 @@ public class SpeedLookupTable {
     public SpeedLookupTable() {
         speeds = new InterpolatingDoubleTreeMap();
 
-        speeds.put(1.452, 3400.0);
-        speeds.put(2.044, 3600.0);
-        speeds.put(2.3249, 3700.0);
+        speeds.put(1.452, 3450.0);
+//        speeds.put(2.044, 3600.0);
+        speeds.put(1.910, 3660.0);
+//        speeds.put(2.3249, 3700.0);
+        speeds.put(2.680, 4000.0);
     }
 
     public double getSpeed(double distance) {

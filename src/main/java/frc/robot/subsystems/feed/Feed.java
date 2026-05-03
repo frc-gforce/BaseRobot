@@ -59,7 +59,7 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
      * Sets the conveyor motor and the feed motor to intake position
      */
     public void intake() {
-        motor.setSpeed(0.2);
+        motor.setSpeed(0.9);
         conveyorMotor.setSpeed(0);
         motorActive = true;
     }
@@ -68,8 +68,8 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
      * Sets the conveyor motor and the feed motor to shoot position
      */
     public void shoot(){
-        motor.setSpeed(-0.2);
-        conveyorMotor.setSpeed(0.4);
+        motor.setSpeed(-1);
+        conveyorMotor.setSpeed(0.8);
         motorActive = true;
     }
 
