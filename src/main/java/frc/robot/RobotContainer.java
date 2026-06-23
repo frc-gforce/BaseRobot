@@ -10,10 +10,12 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
+import frc.robot.controller.FlightSimulatorController;
 import frc.robot.controller.GenericCommandController;
 import frc.robot.controller.XboxCommandController;
 import frc.robot.motors.*;
@@ -36,9 +38,8 @@ import java.util.function.BooleanSupplier;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
-//    private final TankDrive<SparkBaseMotor> tankDrive;
+public class RobotContainer {
+    //    private final TankDrive<SparkBaseMotor> tankDrive;
     private final IntakeXShooter intakeXShooter;
     private final Feed feed;
     private final SwerveDriveSubsystem swerveDrive;
@@ -50,8 +51,9 @@ public class RobotContainer
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
-    private final GenericCommandController driverController =
-            new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+//    private final GenericCommandController driverController =
+//            new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+    private final FlightSimulatorController driverController = new FlightSimulatorController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -101,13 +103,12 @@ public class RobotContainer
         conveyorMotor = MotorFactory.createSparkMotor(Motors.CONVEYOR);
 
 
-        rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE);
-        leftIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_LEFT_INTAKE);
+        rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE, "canivore");
+        leftIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_LEFT_INTAKE, "canivore");
         openIntakeMotorLeft = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_LEFT);
         openIntakeMotorRight = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_RIGHT);
 
         //</editor-fold>
-
 
 
         //<editor-fold desc="Default motors configs">
@@ -152,13 +153,14 @@ public class RobotContainer
 
         swerveDrive = new SwerveDriveSubsystem();
         SwerveInputStream driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
-                () -> driverController.getLeftY() * -1,
-                () -> driverController.getLeftX() * -1)
-                .withControllerRotationAxis(() -> driverController.getRightY() * -1)
+                        () -> driverController.getJoystickX() * -1,
+                        () -> driverController.getJoystickY() * -1)
+                .withControllerRotationAxis(() -> driverController.getRotate() * -1)
                 .deadband(0.1)
                 .scaleTranslation(0.8)
                 .allianceRelativeControl(true);
         swerveDrive.setDefaultCommand(swerveDrive.driveFieldOriented(driveAngularInput));
+//        swerveDrive.setDefaultCommand(swerveDrive.driveRobotRelative(driveAngularInput));
 //        swerveDrive.setDefaultCommand(swerveDrive.driveCommand(
 //                () -> -MathUtil.applyDeadband(driverController.getLeftY(), 0.1), // קדימה/אחורה
 //                () -> -MathUtil.applyDeadband(driverController.getLeftX(), 0.1), // ימינה/שמאלה
@@ -241,10 +243,29 @@ public class RobotContainer
         // cancelling on release.
 //        driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
 //        driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
-        driverController.faceLeft().whileTrue(backIntakeCommand);
-        driverController.faceRight().whileTrue(new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand));
-        driverController.faceUp().whileTrue(closeIntakeCommand);
-        driverController.faceDown().whileTrue(openIntakeCommand);
+//        driverController.faceLeft().whileTrue(backIntakeCommand);
+//        driverController.faceRight().whileTrue(new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand));
+//        driverController.faceUp().whileTrue(closeIntakeCommand);
+//        driverController.faceDown().whileTrue(openIntakeCommand);
+
+        // Shoot
+        new Trigger(() -> driverController.getThrottle() * -1 < OperatorConstants.throttleThreshold).whileTrue(
+                new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand)
+        );
+        // Intake
+        new Trigger(() -> driverController.getThrottle() * -1 > OperatorConstants.throttleThreshold * -1).whileTrue(
+                backIntakeCommand
+        );
+        // Shoot + Intake
+        driverController.f1().whileTrue(
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())),
+                                shootCommand
+                        ),
+                        intakeCommand
+                )
+        );
 
         //sets the gyro to zero
         //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));

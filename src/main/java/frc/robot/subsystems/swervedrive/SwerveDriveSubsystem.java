@@ -90,6 +90,10 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
         swerveDrive.drive(velocity);
     }
 
+    public Command driveRobotRelative(Supplier<ChassisSpeeds> velocity) {
+        return run(() -> swerveDrive.drive(velocity.get()));
+    }
+
     public Command driveForward() {
         return run(() -> {
             swerveDrive.drive(new Translation2d(1, 0), 0, false, false);

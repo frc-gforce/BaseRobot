@@ -12,7 +12,7 @@
   "angle": {
     "type": "krakenx44",
     "id": 7,
-    "canbus": null
+    "canbus": "canivore"
   },
   "encoder": {
     "type": "cancoder",

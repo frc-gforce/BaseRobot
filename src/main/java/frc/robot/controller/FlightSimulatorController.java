@@ -13,7 +13,7 @@ public class FlightSimulatorController extends CommandXboxController {
         super(port);
     }
 
-    public double getThrottlePos() {
+    public double getThrottle() {
         return getRawAxis(Axis.Throttle.value);
     }
 

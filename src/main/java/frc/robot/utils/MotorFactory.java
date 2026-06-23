@@ -27,4 +27,10 @@ public class MotorFactory {
         talonFXMotor.setInverted(motor.inverted);
         return talonFXMotor;
     }
+
+    public static TalonFXMotor createTalonFXMotor(Motors motor, String canbus) {
+        TalonFXMotor talonFXMotor = new TalonFXMotor(motor.id, canbus);
+        talonFXMotor.setInverted(motor.inverted);
+        return talonFXMotor;
+    }
 }
