@@ -64,6 +64,11 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
         motorActive = true;
     }
 
+    public void emptying() {
+        motor.setSpeed(0.9);
+        conveyorMotor.setSpeed(-0.8);
+    }
+
     /**
      * Sets the conveyor motor and the feed motor to shoot position
      */

@@ -46,6 +46,8 @@ public class BackIntake extends GenericSubsystem {
         rightIntakeMotor.setSpeed(0);
     }
 
+    public void emptying() {rightIntakeMotor.setSpeed(-0.5);}
+
     @Override
     protected void subsystemPeriodic() {
         Logger.recordOutput("OpenIntakeMotor", openIntakeMotorRight.getSpeed());
