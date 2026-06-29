@@ -72,12 +72,12 @@ public class RobotContainer {
     private final SparkMaxMotor openIntakeMotorLeft;
     private final SparkMaxMotor openIntakeMotorRight;
 
-    private final Command shootCommand;
-    private final Command intakeCommand;
-    private final Command backIntakeCommand;
-    private final Command openIntakeCommand;
-    private final Command closeIntakeCommand;
-    private final Command aimCommand;
+//    private final Command shootCommand;
+//    private final Command intakeCommand;
+//    private final Command backIntakeCommand;
+//    private final Command openIntakeCommand;
+//    private final Command closeIntakeCommand;
+//    private final Command aimCommand;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -91,10 +91,17 @@ public class RobotContainer {
 
         shootMotor = MotorFactory.createTalonFXMotor(Motors.SHOOT);
         shootMotor.setPID(new PID(
-                0.25,
+//                0.11,
+//                0,
+//                0,
+//                0.2199,
+//                0.1178,
+//                0,
+//                0
+                0.45,
                 0,
                 0,
-                0.18,
+                0,
                 0.12,
                 0,
                 0
@@ -103,10 +110,13 @@ public class RobotContainer {
         conveyorMotor = MotorFactory.createSparkMotor(Motors.CONVEYOR);
 
 
-        rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE, "canivore");
-        leftIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_LEFT_INTAKE, "canivore");
+        rightIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_RIGHT_INTAKE);
+        leftIntakeMotor = MotorFactory.createTalonFXMotor(Motors.BACK_LEFT_INTAKE);
         openIntakeMotorLeft = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_LEFT);
         openIntakeMotorRight = MotorFactory.createSparkMotor(Motors.OPEN_INTAKE_RIGHT);
+
+        openIntakeMotorLeft.setBreak(true);
+        openIntakeMotorRight.setBreak(true);
 
         //</editor-fold>
 
@@ -170,35 +180,35 @@ public class RobotContainer {
 
         //<editor-fold desc="Commands creation">
         GenericCommand tempCommand = new ShootCommand(intakeXShooter, feed, () -> swerveDrive.getPose().getTranslation(), FieldUtils::getHubPose);
-        shootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Shoot Command"
-        );
+//        shootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Shoot Command"
+//        );
         tempCommand = new IntakeCommand(intakeXShooter, feed);
-        intakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Intake Command"
-        );
+//        intakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Intake Command"
+//        );
         tempCommand = new BackIntakeCommand(backIntake);
-        backIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Back Intake Command"
-        );
+//        backIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Back Intake Command"
+//        );
         tempCommand = new OpenIntakeCommand(backIntake);
-        openIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Open Intake Command"
-        );
+//        openIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Open Intake Command"
+//        );
         tempCommand = new CloseIntakeCommand(backIntake);
-        closeIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Close Intake Command"
-        );
+//        closeIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Close Intake Command"
+//        );
         tempCommand = new AimAtHubCommand(swerveDrive);
-        aimCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                tempCommand,
-                "Aim Command"
-        );
+//        aimCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+//                tempCommand,
+//                "Aim Command"
+//        );
         //</editor-fold>
 
 //        driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(tankDrive, driverController));
@@ -215,10 +225,10 @@ public class RobotContainer {
         Command autonomousShootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
                 new AutonomousShootCommand(intakeXShooter, feed, 10),
                 "Auto Shoot Command");
-        autoChooser.addOption("Bottom Ramp", Autos.bottomRampAuto(autonomousShootCommand, intakeCommand, swerveDrive.stop()));
-        autoChooser.addOption("Bottom Trench", Autos.bottomTrenchAuto(autonomousShootCommand, intakeCommand));
-        autoChooser.addOption("Upper Ramp", Autos.upperRampAuto(autonomousShootCommand, intakeCommand));
-        autoChooser.addOption("Upper Trench", Autos.upperTrenchAuto(autonomousShootCommand, intakeCommand));
+        autoChooser.addOption("Bottom Ramp", Autos.bottomRampAuto(autonomousShootCommand, intakeCommand(), swerveDrive.stop()));
+        autoChooser.addOption("Bottom Trench", Autos.bottomTrenchAuto(autonomousShootCommand, intakeCommand()));
+        autoChooser.addOption("Upper Ramp", Autos.upperRampAuto(autonomousShootCommand, intakeCommand()));
+        autoChooser.addOption("Upper Trench", Autos.upperTrenchAuto(autonomousShootCommand, intakeCommand()));
         autoChooser.addOption("Test", Autos.testAuto());
 
         SmartDashboard.putData("Auto", autoChooser);
@@ -249,23 +259,27 @@ public class RobotContainer {
 //        driverController.faceDown().whileTrue(openIntakeCommand);
 
         // Shoot
-        new Trigger(() -> driverController.getThrottle() * -1 < OperatorConstants.throttleThreshold).whileTrue(
-                new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand)
+        new Trigger(() -> driverController.getThrottle() * -1 > OperatorConstants.throttleThreshold).whileTrue(
+                new SequentialCommandGroup(aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand())
         );
         // Intake
-        new Trigger(() -> driverController.getThrottle() * -1 > OperatorConstants.throttleThreshold * -1).whileTrue(
-                backIntakeCommand
+        new Trigger(() -> driverController.getThrottle() * -1 < OperatorConstants.throttleThreshold * -1).whileTrue(
+                backIntakeCommand()
         );
         // Shoot + Intake
         driverController.f1().whileTrue(
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
-                                aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())),
-                                shootCommand
+                                aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())),
+                                shootCommand()
                         ),
-                        intakeCommand
+                        backIntakeCommand()
                 )
         );
+
+        driverController.f2().whileTrue(emptyCommand());
+        driverController.x().whileTrue(closeIntakeCommand());
+        driverController.a().whileTrue(openIntakeCommand());
 
         //sets the gyro to zero
         //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));
@@ -298,5 +312,54 @@ public class RobotContainer {
 
     public void resetOdometry() {
         swerveDrive.resetOdometry(LimelightUtils.getPose2d());
+    }
+
+    private Command shootCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new ShootCommand(intakeXShooter, feed, () -> swerveDrive.getPose().getTranslation(), FieldUtils::getHubPose),
+                "Shoot Command"
+        );
+    }
+
+    private Command intakeCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new IntakeCommand(intakeXShooter, feed),
+                "Intake Command"
+        );
+    }
+
+    private Command backIntakeCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new BackIntakeCommand(backIntake),
+                "Back Intake Command"
+        );
+    }
+
+    private Command openIntakeCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new OpenIntakeCommand(backIntake),
+                "Open Intake Command"
+        );
+    }
+
+    private Command closeIntakeCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new CloseIntakeCommand(backIntake),
+                "Close Intake Command"
+        );
+    }
+
+    private Command aimCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new AimAtHubCommand(swerveDrive),
+                "Aim Command"
+        );
+    }
+
+    private Command emptyCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new EmptyingContainer(feed, backIntake),
+                "Empty Container Command"
+        );
     }
 }

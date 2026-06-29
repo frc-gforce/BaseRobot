@@ -16,6 +16,7 @@ public class OpenIntakeCommand extends GenericCommand {
     public void initialize() {
         Logger.recordOutput("BackIntake", true);
         intake.openIntake();
+
     }
 
     @Override

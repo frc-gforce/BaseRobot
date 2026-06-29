@@ -23,13 +23,7 @@ public class MotorFactory {
      * @return The created TalonFXMotor instance.
      */
     public static TalonFXMotor createTalonFXMotor(Motors motor) {
-        TalonFXMotor talonFXMotor = new TalonFXMotor(motor.id);
-        talonFXMotor.setInverted(motor.inverted);
-        return talonFXMotor;
-    }
-
-    public static TalonFXMotor createTalonFXMotor(Motors motor, String canbus) {
-        TalonFXMotor talonFXMotor = new TalonFXMotor(motor.id, canbus);
+        TalonFXMotor talonFXMotor = new TalonFXMotor(motor.id, motor.canbusLoop.value);
         talonFXMotor.setInverted(motor.inverted);
         return talonFXMotor;
     }

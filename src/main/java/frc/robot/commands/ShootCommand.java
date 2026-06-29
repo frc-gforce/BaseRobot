@@ -60,10 +60,12 @@ public class ShootCommand extends GenericCommand {
         double speed = speedLookupTable.getSpeed(robotPose.get(), hubPose.get());
         Logger.recordOutput("IntakeXShooterSpeed", speed);
         intakeXShooter.setMotorSpeed(speed);
-        if (Math.abs(speed - intakeXShooter.getCurrentSpeed()) < 10) {
+        if (Math.abs(speed - intakeXShooter.getCurrentSpeed()) < 50) {
+            Logger.recordOutput("Shooting", true);
             feed.shoot();
         }
         else {
+            Logger.recordOutput("Shooting", false);
             feed.stop();
         }
     }

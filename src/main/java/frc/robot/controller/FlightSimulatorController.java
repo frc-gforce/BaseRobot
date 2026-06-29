@@ -55,8 +55,8 @@ public class FlightSimulatorController extends CommandXboxController {
 
     public enum Axis {
         Throttle(2),
-        JoystickY(1),
-        JoystickX(0),
+        JoystickY(0),
+        JoystickX(1),
         Rotate(5);
 
         /** Axis value. */
