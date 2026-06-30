@@ -194,7 +194,7 @@ public class RobotContainer {
 //                tempCommand,
 //                "Back Intake Command"
 //        );
-        tempCommand = new OpenIntakeCommand(backIntake);
+        tempCommand = new OpenIntakeCommand(backIntake, feed);
 //        openIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
 //                tempCommand,
 //                "Open Intake Command"
@@ -337,7 +337,7 @@ public class RobotContainer {
 
     private Command openIntakeCommand() {
         return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                new OpenIntakeCommand(backIntake),
+                new OpenIntakeCommand(backIntake, feed),
                 "Open Intake Command"
         );
     }

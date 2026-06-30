@@ -15,6 +15,7 @@ public class SpeedLookupTable {
         speeds.put(1.4, 2500.0);
         speeds.put(1.98, 2700.0);
         speeds.put(2.53, 3000.0);
+        speeds.put(4.95, 4350.0);
 //        speeds.put(1.452, 3450.0);
 //        speeds.put(2.044, 3600.0);
 //        speeds.put(1.910, 3660.0);

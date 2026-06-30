@@ -64,6 +64,10 @@ public class Feed<T extends BaseMotor> extends GenericSubsystem {
         motorActive = true;
     }
 
+    public void openIntake() {
+        motor.setSpeed(0.1);
+    }
+
     public void emptying() {
         motor.setSpeed(0.9);
         conveyorMotor.setSpeed(-0.8);
