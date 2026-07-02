@@ -5,8 +5,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,8 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.controller.FlightSimulatorController;
-import frc.robot.controller.GenericCommandController;
-import frc.robot.controller.XboxCommandController;
 import frc.robot.motors.*;
 import frc.robot.motors.TalonFXMotor;
 import frc.robot.subsystems.backintake.BackIntake;
@@ -167,7 +166,7 @@ public class RobotContainer {
                         () -> driverController.getJoystickY() * -1)
                 .withControllerRotationAxis(() -> driverController.getRotate() * -1)
                 .deadband(0.1)
-                .scaleTranslation(0.8)
+//                .scaleTranslation(0.8)
                 .allianceRelativeControl(true);
         swerveDrive.setDefaultCommand(swerveDrive.driveFieldOriented(driveAngularInput));
 //        swerveDrive.setDefaultCommand(swerveDrive.driveRobotRelative(driveAngularInput));
@@ -222,14 +221,22 @@ public class RobotContainer {
     }
 
     private void loadAutos() {
+        NamedCommands.registerCommand("OpenIntake", openIntakeCommand().withTimeout(4));
+        NamedCommands.registerCommand("Shoot", shootCommand());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
         Command autonomousShootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                new AutonomousShootCommand(intakeXShooter, feed, 10),
+                
+//                new AutonomousShootCommand(intakeXShooter, feed, 10),
+                aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())),
                 "Auto Shoot Command");
-        autoChooser.addOption("Bottom Ramp", Autos.bottomRampAuto(autonomousShootCommand, intakeCommand(), swerveDrive.stop()));
-        autoChooser.addOption("Bottom Trench", Autos.bottomTrenchAuto(autonomousShootCommand, intakeCommand()));
-        autoChooser.addOption("Upper Ramp", Autos.upperRampAuto(autonomousShootCommand, intakeCommand()));
-        autoChooser.addOption("Upper Trench", Autos.upperTrenchAuto(autonomousShootCommand, intakeCommand()));
-        autoChooser.addOption("Test", Autos.testAuto());
+        autoChooser.addOption("Bottom Ramp", Autos.bottomRampAuto(autonomousShootCommand, backIntakeCommand(), swerveDrive.stop()));
+        autoChooser.addOption("Bottom Trench", Autos.bottomTrenchAuto(autonomousShootCommand, backIntakeCommand()));
+        autoChooser.addOption("Upper Ramp", Autos.upperRampAuto(autonomousShootCommand, backIntakeCommand()));
+        autoChooser.addOption("Upper Trench", Autos.upperTrenchAuto(autonomousShootCommand, backIntakeCommand()));
+        autoChooser.addOption("Middle", Autos.bottomTrenchToMiddle(autonomousShootCommand, backIntakeCommand(), openIntakeCommand()));
+//        autoChooser.addOption("Test", Autos.testAuto());
 
         SmartDashboard.putData("Auto", autoChooser);
     }
