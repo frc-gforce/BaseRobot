@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +47,8 @@ public class Robot extends LoggedRobot
 
     @Override
     public void robotInit() {
+        StatusLogger.disableAutoLogging();
+        SignalLogger.enableAutoLogging(false);
         Logger.recordMetadata("BaseRobot", "MyRobot");
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/logs/"));
         Logger.addDataReceiver(new NT4Publisher());

@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
@@ -71,12 +73,8 @@ public class RobotContainer {
     private final SparkMaxMotor openIntakeMotorLeft;
     private final SparkMaxMotor openIntakeMotorRight;
 
-//    private final Command shootCommand;
-//    private final Command intakeCommand;
-//    private final Command backIntakeCommand;
-//    private final Command openIntakeCommand;
-//    private final Command closeIntakeCommand;
-//    private final Command aimCommand;
+
+    private final SwerveInputStream driveAngularInput;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -161,7 +159,7 @@ public class RobotContainer {
         //</editor-fold>
 
         swerveDrive = new SwerveDriveSubsystem();
-        SwerveInputStream driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
+        driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
                         () -> driverController.getJoystickX() * -1,
                         () -> driverController.getJoystickY() * -1)
                 .withControllerRotationAxis(() -> driverController.getRotate() * -1)
@@ -176,39 +174,6 @@ public class RobotContainer {
 //                () -> -MathUtil.applyDeadband(driverController.getRightX(), 0.1), // סיבוב
 //                () -> -MathUtil.applyDeadband(driverController.getRightY(), 0.1) // סיבוב
 //        ));
-
-        //<editor-fold desc="Commands creation">
-        GenericCommand tempCommand = new ShootCommand(intakeXShooter, feed, () -> swerveDrive.getPose().getTranslation(), FieldUtils::getHubPose);
-//        shootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Shoot Command"
-//        );
-        tempCommand = new IntakeCommand(intakeXShooter, feed);
-//        intakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Intake Command"
-//        );
-        tempCommand = new BackIntakeCommand(backIntake);
-//        backIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Back Intake Command"
-//        );
-        tempCommand = new OpenIntakeCommand(backIntake, feed);
-//        openIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Open Intake Command"
-//        );
-        tempCommand = new CloseIntakeCommand(backIntake);
-//        closeIntakeCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Close Intake Command"
-//        );
-        tempCommand = new AimAtHubCommand(swerveDrive);
-//        aimCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-//                tempCommand,
-//                "Aim Command"
-//        );
-        //</editor-fold>
 
 //        driverChooser.setDefaultOption("Arcade", new DriveArcadeCommand(tankDrive, driverController));
 //        driverChooser.addOption("Tank", new DriveTankCommand(tankDrive, driverController));
@@ -227,7 +192,6 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
 
         Command autonomousShootCommand = GenericSubsystemCommandFactory.getAsSubsystemsCommand(
-                
 //                new AutonomousShootCommand(intakeXShooter, feed, 10),
                 aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())),
                 "Auto Shoot Command");
@@ -267,7 +231,8 @@ public class RobotContainer {
 
         // Shoot
         new Trigger(() -> driverController.getThrottle() * -1 > OperatorConstants.throttleThreshold).whileTrue(
-                new SequentialCommandGroup(aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand())
+//                new SequentialCommandGroup(aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand())
+                shootOnTheMoveCommand()
         );
         // Intake
         new Trigger(() -> driverController.getThrottle() * -1 < OperatorConstants.throttleThreshold * -1).whileTrue(
@@ -321,10 +286,18 @@ public class RobotContainer {
         swerveDrive.resetOdometry(LimelightUtils.getPose2d());
     }
 
+    //<editor-fold desc="Commands creation">
     private Command shootCommand() {
         return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
                 new ShootCommand(intakeXShooter, feed, () -> swerveDrive.getPose().getTranslation(), FieldUtils::getHubPose),
                 "Shoot Command"
+        );
+    }
+
+    private Command shootOnTheMoveCommand() {
+        return GenericSubsystemCommandFactory.getAsSubsystemsCommand(
+                new ShootOnTheMoveCommand(swerveDrive, intakeXShooter, feed, driveAngularInput),
+                "Shoot on the move Command"
         );
     }
 
@@ -369,4 +342,5 @@ public class RobotContainer {
                 "Empty Container Command"
         );
     }
+    //</editor-fold>
 }

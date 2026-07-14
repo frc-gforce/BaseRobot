@@ -27,7 +27,7 @@ import frc.robot.subsystems.GenericSubsystem;
 
 public class SwerveDriveSubsystem extends GenericSubsystem {
 
-    double maximumSpeed = 1.5;//Units.feetToMeters(4.5);
+    double maximumSpeed = 5.3;//Units.feetToMeters(4.5);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
     SwerveDrive swerveDrive;
 
@@ -74,8 +74,8 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        swerveDrive.resetOdometry(LimelightUtils.getPose2d());
-//        swerveDrive.resetOdometry(startPose);
+//        swerveDrive.resetOdometry(LimelightUtils.getPose2d());
+        swerveDrive.resetOdometry(startPose);
     }
 
     public Pose2d getPose() {

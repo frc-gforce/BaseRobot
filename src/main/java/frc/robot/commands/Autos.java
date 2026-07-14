@@ -166,7 +166,8 @@ public final class Autos {
                 //shootCommand
                 new ParallelRaceGroup(
                         openIntakeCommand.asProxy().withTimeout(4),
-                        AutoBuilder.followPath(path1)
+                        AutoBuilder.followPath
+                                (path1)
                         //Open intake
 //                        intakeCommand.asProxy()
                 ),
