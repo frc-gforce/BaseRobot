@@ -8,6 +8,7 @@ import frc.robot.motors.BaseMotor;
 import frc.robot.motors.BrushlessMotor;
 import frc.robot.motors.TalonFXMotor;
 import frc.robot.subsystems.GenericSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Controls the ball collecting and shooting mechanisms
@@ -63,12 +64,12 @@ public class IntakeXShooter<T extends BrushlessMotor> extends GenericSubsystem {
     }
 
     /**
-     * Returns the target speed needed inorder to shoot
+     * Returns the current speed of the motor
      *
-     * @return target speed
+     * @return current speed
      */
-    public double getTargetSpeed() {
-        return this.targetSpeed;
+    public double getCurrentSpeed() {
+        return motor.getVelocity().in(Units.RPM);
     }
 
     /**
@@ -108,5 +109,10 @@ public class IntakeXShooter<T extends BrushlessMotor> extends GenericSubsystem {
         double speed = motor.getSpeed();
         return speed <= targetSpeed + speedError &&
                 speed >= targetSpeed - speedError;
+    }
+
+    @Override
+    protected void subsystemPeriodic() {
+        Logger.recordOutput(constants.speedLogPath(), motor.getVelocity().in(Units.RPM));
     }
 }

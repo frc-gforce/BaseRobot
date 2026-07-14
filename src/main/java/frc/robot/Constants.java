@@ -18,6 +18,7 @@ public final class Constants
     public static class OperatorConstants
     {
         public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final double throttleThreshold = 0.8;
 
         //shooter
         public static final double SHOOTER_TARGET_SPEED = 10;

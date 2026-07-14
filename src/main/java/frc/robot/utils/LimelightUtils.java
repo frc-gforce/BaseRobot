@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import frc.robot.limelight.LimelightHelpers;
 
 public class LimelightUtils {
-    public static final String NAME = "limelight";
+    public static final String NAME = "limelight-main";
 
     /**
      * Checks if the robot currently has a target

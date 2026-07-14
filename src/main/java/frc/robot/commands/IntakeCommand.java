@@ -23,13 +23,13 @@ public class IntakeCommand extends GenericCommand {
 
     @Override
     public void initialize() {
-        intakeXShooter.setMotorSpeed(4000);
-        feed.setSpeed(1);
+        intakeXShooter.setMotorSpeed(3500);
+        feed.intake();
     }
 
     @Override
     public void end(boolean interrupted) {
         intakeXShooter.setMotorSpeed(0);
-        feed.setSpeed(0);
+        feed.stop();
     }
 }

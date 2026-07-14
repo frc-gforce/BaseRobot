@@ -22,7 +22,7 @@ public class AutonomousShootCommand extends GenericCommand{
     public void initialize() {
         commandStart = Timer.getFPGATimestamp();
         intakeXShooter.setMotorSpeed(1);
-        feed.setSpeed(-1);
+        feed.shoot();
     }
 
     @Override
@@ -33,6 +33,6 @@ public class AutonomousShootCommand extends GenericCommand{
     @Override
     public void end(boolean interrupted) {
         intakeXShooter.setMotorSpeed(0);
-        feed.setSpeed(0);
+        feed.stop();
     }
 }

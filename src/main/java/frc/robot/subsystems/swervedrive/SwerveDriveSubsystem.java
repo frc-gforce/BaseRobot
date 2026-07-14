@@ -11,7 +11,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.utils.FieldUtils;
 import frc.robot.utils.LimelightUtils;
 import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveDrive;
@@ -21,13 +22,12 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericSubsystem;
 
 public class SwerveDriveSubsystem extends GenericSubsystem {
 
-    double maximumSpeed = 1;//Units.feetToMeters(4.5);
+    double maximumSpeed = 5.3;//Units.feetToMeters(4.5);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
     SwerveDrive swerveDrive;
 
@@ -68,13 +68,7 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
                             new PIDConstants(5.0, 0.0, 0.0)
                     ),
                     config,
-                    () -> {
-                        var alliance = DriverStation.getAlliance();
-                        if (alliance.isPresent()) {
-                            return alliance.get() == DriverStation.Alliance.Red;
-                        }
-                        return false;
-                    },
+                    FieldUtils::isRedTeam,
                     this
             );
         } catch (Exception e) {
@@ -84,8 +78,20 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
         swerveDrive.resetOdometry(startPose);
     }
 
+    public Pose2d getPose() {
+        return swerveDrive.getPose();
+    }
+
     public Command stop() {
         return driveCommand(() -> 0, () -> 0, () -> 0, () -> 0);
+    }
+
+    public void driveRobotRelative(ChassisSpeeds velocity) {
+        swerveDrive.drive(velocity);
+    }
+
+    public Command driveRobotRelative(Supplier<ChassisSpeeds> velocity) {
+        return run(() -> swerveDrive.drive(velocity.get()));
     }
 
     public Command driveForward() {
@@ -155,10 +161,22 @@ public class SwerveDriveSubsystem extends GenericSubsystem {
 
     @Override
     protected void subsystemPeriodic() {
-        Logger.recordOutput(getLogPath() + "/Pose", swerveDrive.getPose());
+        log();
+        if (LimelightUtils.getTagCount() > 0) {
+            swerveDrive.addVisionMeasurement(LimelightUtils.getPose2d(), Timer.getFPGATimestamp());
+        }
     }
 
     public SwerveDrive getSwerveDrive() {
         return swerveDrive;
+    }
+
+    private void log() {
+        Translation2d hubPose = FieldUtils.getHubPose();
+        Logger.recordOutput(getLogPath() + "/Pose", swerveDrive.getPose());
+        Logger.recordOutput(getLogPath() + "/Pose/HubDistance", getPose().getTranslation().getDistance(hubPose));
+        Logger.recordOutput(getLogPath() + "/Pose/HubAimed", Math.abs(hubPose.minus(getPose().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(190)).getRadians()) - Math.abs(getPose().getRotation().getRadians()) >= Math.toRadians(2) );
+        Logger.recordOutput(getLogPath() + "/Vision", LimelightUtils.getPose2d());
+        Logger.recordOutput(getLogPath() + "/Vision/TagCount", LimelightUtils.getTagCount());
     }
 }

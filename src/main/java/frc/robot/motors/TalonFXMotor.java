@@ -2,6 +2,7 @@ package frc.robot.motors;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -26,15 +27,20 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     private final Slot0Configs slotConfigs;
 
-    public TalonFXMotor(int id) {
+    public TalonFXMotor(int id, String canbus) {
         //TODO change CANBus to dynamic
-        motor = new TalonFX(id);
+        motor = new TalonFX(id, new CANBus(canbus));
         config = new TalonFXConfiguration();
 
         velocityVoltage = new VelocityVoltage(0).withSlot(0);
         positionVoltage = new PositionVoltage(0).withSlot(0);
         slotConfigs = new Slot0Configs();
     }
+
+    public TalonFXMotor(int id) {
+        this(id, "rio");
+    }
+
     @Override
     public void setSpeed(double speed) {
         motor.set(speed);
@@ -92,8 +98,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        Logger.recordOutput("setVelocity", velocity.in(Units.RotationsPerSecond));
-        Logger.recordOutput("setVelocityRPM", velocity.in(Units.RPM));
+//        Logger.recordOutput("setVelocity", velocity.in(Units.RotationsPerSecond));
+//        Logger.recordOutput("setVelocityRPM", velocity.in(Units.RPM));
         motor.setControl(velocityVoltage.withVelocity(velocity));
     }
 
@@ -104,8 +110,8 @@ public class TalonFXMotor implements TalonBaseMotor {
 
     @Override
     public void stop() {
-        Logger.recordOutput("setVelocity", 0);
-        Logger.recordOutput("setVelocityRPM", 0);
+//        Logger.recordOutput("setVelocity", 0);
+//        Logger.recordOutput("setVelocityRPM", 0);
         motor.stopMotor();
     }
 
