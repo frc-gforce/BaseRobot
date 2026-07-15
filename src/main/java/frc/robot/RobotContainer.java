@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.controller.FlightSimulatorController;
+import frc.robot.controller.GenericCommandController;
+import frc.robot.controller.XboxCommandController;
 import frc.robot.motors.*;
 import frc.robot.motors.TalonFXMotor;
 import frc.robot.subsystems.backintake.BackIntake;
@@ -52,10 +55,9 @@ public class RobotContainer {
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
-//    private final GenericCommandController driverController =
-//            new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
-    private final FlightSimulatorController driverController = new FlightSimulatorController(OperatorConstants.DRIVER_CONTROLLER_PORT);
-
+    private final GenericCommandController driverController =
+            new XboxCommandController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+    //    private final FlightSimulatorController driverController = new FlightSimulatorController(OperatorConstants.DRIVER_CONTROLLER_PORT);
     private final SendableChooser<Command> driverChooser = new SendableChooser<>();
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -159,6 +161,16 @@ public class RobotContainer {
         //</editor-fold>
 
         swerveDrive = new SwerveDriveSubsystem();
+
+        driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
+                        () -> driverController.getLeftY() * -1,
+                        () -> driverController.getLeftX() * -1)
+                .withControllerRotationAxis(driverController::getRightX)
+                .deadband(0.1)
+                .scaleTranslation(0.8)
+                .robotRelative(true);
+
+        /*
         driveAngularInput = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
                         () -> driverController.getJoystickX() * -1,
                         () -> driverController.getJoystickY() * -1)
@@ -166,7 +178,11 @@ public class RobotContainer {
                 .deadband(0.1)
 //                .scaleTranslation(0.8)
                 .allianceRelativeControl(true);
+                */
+
         swerveDrive.setDefaultCommand(swerveDrive.driveFieldOriented(driveAngularInput));
+
+
 //        swerveDrive.setDefaultCommand(swerveDrive.driveRobotRelative(driveAngularInput));
 //        swerveDrive.setDefaultCommand(swerveDrive.driveCommand(
 //                () -> -MathUtil.applyDeadband(driverController.getLeftY(), 0.1), // קדימה/אחורה
@@ -224,13 +240,14 @@ public class RobotContainer {
         // cancelling on release.
 //        driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand());
 //        driverController.faceLeft().onTrue(new InstantCommand(this::switchBreak));
-//        driverController.faceLeft().whileTrue(backIntakeCommand);
-//        driverController.faceRight().whileTrue(new SequentialCommandGroup(aimCommand.onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand));
-//        driverController.faceUp().whileTrue(closeIntakeCommand);
-//        driverController.faceDown().whileTrue(openIntakeCommand);
+        driverController.faceLeft().whileTrue(backIntakeCommand());
+        driverController.faceRight().whileTrue(new SequentialCommandGroup(aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand()));
+        driverController.faceUp().whileTrue(closeIntakeCommand());
+        driverController.faceDown().whileTrue(openIntakeCommand());
 
         // Shoot
-        new Trigger(() -> driverController.getThrottle() * -1 > OperatorConstants.throttleThreshold).whileTrue(
+        /*
+        new Trigger(() -> driverController. * -1 > OperatorConstants.throttleThreshold).whileTrue(
 //                new SequentialCommandGroup(aimCommand().onlyIf(() -> FieldUtils.isInAllianceSide(swerveDrive.getPose())), shootCommand())
                 shootOnTheMoveCommand()
         );
@@ -252,6 +269,7 @@ public class RobotContainer {
         driverController.f2().whileTrue(emptyCommand());
         driverController.x().whileTrue(closeIntakeCommand());
         driverController.a().whileTrue(openIntakeCommand());
+         */
 
         //sets the gyro to zero
         //driverController.y().onTrue(new InstantCommand(swerveDrive::zeroGyro));
